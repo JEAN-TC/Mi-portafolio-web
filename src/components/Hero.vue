@@ -27,7 +27,6 @@ function typeLoop() {
 }
 
 const rasgos = [
-  { label: 'Leer',                desc: 'Leo de todo — seguridad, filosofía, técnica. Si algo me atrapa a las 2am, no lo suelto hasta entenderlo.' },
   { label: 'Investigar',          desc: 'No me basta con que algo funcione. Necesito saber por qué funciona, y qué pasa si lo rompo.' },
   { label: 'Noche',               desc: 'Funciono mejor de noche. El silencio ayuda a pensar sin interrupciones.' },
   { label: 'Romper para entender', desc: 'La mejor forma de aprender algo es desmontarlo por completo. Así entiendo desde adentro.' },
