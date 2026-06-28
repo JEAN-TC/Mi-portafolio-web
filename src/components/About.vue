@@ -87,6 +87,10 @@ const education = [
             Construyo pensando en que todo puede ser vulnerado, así que todo debe estar
             diseñado para resistir.
           </p>
+          <p class="sm-bio-text" style="margin-top: 0.75rem;">
+            Leo de todo — seguridad, filosofía, técnica.
+            <em>Si algo me atrapa a las 2am, no lo suelto hasta entenderlo.</em>
+          </p>
         </div>
         <div class="sm-tags-card">
           <div class="sm-bio-tag">Intereses</div>
