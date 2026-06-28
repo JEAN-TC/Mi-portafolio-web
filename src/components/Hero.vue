@@ -124,12 +124,13 @@ onMounted(() => typeLoop())
         <div class="card card-focus" data-aos="fade-right" data-aos-duration="900" data-aos-delay="150">
           <span class="label">mentalidad</span>
           <blockquote class="quote">
-            La seguridad no es<br/>un producto,<br/>
-            <span class="quote-accent">es una mentalidad.</span>
+            No diseño para<br/>el escenario perfecto,<br/>
+            <span class="quote-accent">forjo para la adversidad.</span>
           </blockquote>
           <p class="focus-sub">
-            Pienso como atacante, actúo como defensor.
-            Zero Trust no es una configuración, es una forma de ver el mundo.
+            Anticipar la falla no es pesimismo, es preparación. Entender cómo se rompen
+            los sistemas me ha enseñado que la verdadera fortaleza nace de reconocer
+            nuestras propias vulnerabilidades.
           </p>
         </div>
 
