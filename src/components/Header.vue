@@ -19,6 +19,7 @@ const navItems = [
   { name: 'Certificaciones', href: '/#certificaciones' },
   { name: 'Proyectos',       href: '/#proyectos'       },
   { name: 'Apuntes',         href: '/apuntes'          },
+  { name: 'Terminal',        href: '/terminal'         },
 ]
 </script>
 

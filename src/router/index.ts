@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import CertificationsView from '../views/CertificationsView.vue'
 import ApuntesView from '../views/ApuntesView.vue'
 import NotaView from '../views/NotaView.vue'
+import TerminalView from '../views/TerminalView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/apuntes/:id',
       name: 'nota',
       component: NotaView
+    },
+    {
+      path: '/terminal',
+      name: 'terminal',
+      component: TerminalView
     }
   ],
   scrollBehavior(to, from, savedPosition) {

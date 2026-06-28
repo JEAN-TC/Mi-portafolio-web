@@ -98,8 +98,7 @@ onMounted(() => typeLoop())
         <span class="label">sobre mí</span>
         <p class="about-text">
           Soy de los que leen hasta las 2am porque encontré algo interesante.
-          Callado en los cuartos, ruidoso en las ideas. Aprendo todos los días
-          porque <em>el que deja de aprender deja de ser peligroso.</em>
+          Callado en los cuartos, ruidoso en las ideas.<em>Siempre hay algo nuevo por aprender</em>
         </p>
         <div class="pills">
           <button

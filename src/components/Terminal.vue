@@ -6,7 +6,7 @@ const inputCommand = ref('')
 const terminalOutput = ref<{ text: string; isCommand: boolean; isError?: boolean }[]>([
   { text: 'Iniciando conexión segura...', isCommand: false },
   { text: 'Estableciendo túnel encriptado [OK]', isCommand: false },
-  { text: 'Autenticación exitosa. Bienvenido, Pwnd_User.', isCommand: false },
+  { text: 'Autenticación exitosa. Bienvenido, jean.', isCommand: false },
   { text: 'Escribe "help" para ver los comandos disponibles.', isCommand: false }
 ])
 
@@ -17,7 +17,7 @@ const processCommand = () => {
   if (!cmd) return
 
   // Add user command to output
-  terminalOutput.value.push({ text: `root@jean_xp:~# ${inputCommand.value}`, isCommand: true })
+  terminalOutput.value.push({ text: `jean@jean_xp:~$ ${inputCommand.value}`, isCommand: true })
 
   // Process specific commands
   switch (cmd) {
@@ -27,7 +27,7 @@ const processCommand = () => {
         { text: '  whoami  - Muestra información del sistema', isCommand: false },
         { text: '  skills  - Lista los vectores de ataque conocidos', isCommand: false },
         { text: '  clear   - Limpia la terminal', isCommand: false },
-        { text: '  sudo    - Intenta escalar privilegios', isCommand: false }
+        { text: '  sudo su - Intenta escalar privilegios', isCommand: false }
       )
       break
     case 'whoami':
@@ -42,7 +42,8 @@ const processCommand = () => {
       terminalOutput.value = []
       break
     case 'sudo':
-      terminalOutput.value.push({ text: 'Permiso denegado. Este incidente será reportado.', isError: true })
+    case 'sudo su':
+      terminalOutput.value.push({ text: 'Permiso denegado.', isError: true })
       break
     default:
       terminalOutput.value.push({ text: `bash: ${cmd}: orden no encontrada`, isError: true })
@@ -69,7 +70,7 @@ const processCommand = () => {
       </div>
       <div class="flex items-center gap-2 text-[#a1a1aa] text-xs">
         <TerminalIcon class="w-3 h-3" />
-        <span>root@jean_xp: ~</span>
+        <span>jean@jean_xp: ~</span>
       </div>
       <div></div> <!-- Placeholder for flex balance -->
     </div>
@@ -86,7 +87,7 @@ const processCommand = () => {
       </div>
 
       <div class="flex items-center mt-2">
-        <span class="text-[#ff0000] mr-2">root@jean_xp:~#</span>
+        <span class="text-[#1db954] mr-2">jean@jean_xp:~$</span>
         <form @submit.prevent="processCommand" class="flex-1">
           <input 
             type="text" 
