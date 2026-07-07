@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import cwlLogo from '../assets/CWL.png'
-import { ref, onMounted } from 'vue'
+import fotoPersonal from '../assets/Foto personal.png'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 
 const typed = ref('')
 const phrases = [
@@ -41,7 +41,72 @@ function toggleRasgo(i: number) {
   activeRasgo.value = activeRasgo.value === i ? null : i
 }
 
-onMounted(() => typeLoop())
+// ── Discord Presence ──────────────────────────────────────
+const DISCORD_ID = '1222709051172065301'
+const discordAvatar  = ref('')
+const discordStatus  = ref<'online'|'idle'|'dnd'|'offline'>('offline')
+const discordLoaded  = ref(false)
+
+const statusColor = computed(() => ({
+  online:  '#3ba55d',
+  idle:    '#faa61a',
+  dnd:     '#ed4245',
+  offline: '#747f8d',
+})[discordStatus.value])
+
+const statusLabel = computed(() => ({
+  online:  'En línea',
+  idle:    'Ausente',
+  dnd:     'No molestar',
+  offline: 'Desconectado',
+})[discordStatus.value])
+
+let lanyardInterval: ReturnType<typeof setInterval> | null = null
+
+function buildAvatarUrl(userId: string, hash: string) {
+  const ext = hash.startsWith('a_') ? 'gif' : 'webp'
+  return `https://cdn.discordapp.com/avatars/${userId}/${hash}.${ext}?size=128`
+}
+
+async function fetchPresence() {
+  // 1️⃣ Lanyard → status en tiempo real + avatar (requiere unirse a discord.gg/lanyard)
+  try {
+    const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data.success) {
+        discordStatus.value = data.data.discord_status ?? 'offline'
+        const user = data.data.discord_user
+        if (user?.avatar) discordAvatar.value = buildAvatarUrl(DISCORD_ID, user.avatar)
+        discordLoaded.value = true
+        return
+      }
+    }
+  } catch { /* siguiente */ }
+
+  // 2️⃣ discordlookup.mesalytic.moe → avatar público sin auth (CORS-friendly)
+  try {
+    const res = await fetch(`https://discordlookup.mesalytic.moe/v1/user/${DISCORD_ID}`)
+    if (res.ok) {
+      const data = await res.json()
+      if (data?.avatar?.link) {
+        discordAvatar.value = data.avatar.link
+      } else if (data?.avatar?.id) {
+        discordAvatar.value = buildAvatarUrl(DISCORD_ID, data.avatar.id)
+      }
+    }
+  } catch { /* siguiente */ }
+
+  discordLoaded.value = true
+}
+
+onMounted(() => {
+  typeLoop()
+  fetchPresence()
+  lanyardInterval = setInterval(fetchPresence, 30_000)
+})
+onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
+
 </script>
 
 <template>
@@ -76,10 +141,10 @@ onMounted(() => typeLoop())
           </div>
         </div>
 
-        <!-- Logo -->
+        <!-- Foto perfil -->
         <div class="logo-block" data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="200">
           <div class="logo-glow"></div>
-          <img :src="cwlLogo" alt="CWL" class="logo-img" />
+          <img :src="fotoPersonal" alt="Jean Piero" class="logo-img profile-img" />
           <div class="logo-ring ring-outer"></div>
           <div class="logo-ring ring-inner"></div>
         </div>
@@ -288,7 +353,7 @@ onMounted(() => typeLoop())
 /* ─── LOGO ───────────────────────────────────────────────── */
 .logo-block {
   position: relative;
-  width: 240px; height: 240px;
+  width: 300px; height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -303,14 +368,17 @@ onMounted(() => typeLoop())
 }
 @keyframes glowPulse { from{opacity:0.5} to{opacity:1} }
 .logo-img {
-  width: 68%;
-  object-fit: contain;
-  opacity: 0.55;
-  filter: grayscale(1);
-  transition: opacity 0.5s, filter 0.5s;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+  opacity: 1;
+  filter: none;
   position: relative; z-index: 2;
+  border: 2px solid rgba(255,51,51,0.15);
 }
-.logo-block:hover .logo-img { opacity: 1; filter: grayscale(0); }
+.logo-block:hover .logo-img { opacity: 1; }
 .logo-ring {
   position: absolute;
   border-radius: 50%;
@@ -581,6 +649,56 @@ onMounted(() => typeLoop())
 .ver-todos span { transition: transform 0.3s; display: inline-block; }
 .ver-todos:hover span { transform: translateX(4px); }
 
+/* ─── DISCORD PRESENCE ───────────────────────────────────── */
+.dc-badge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  text-decoration: none;
+  z-index: 10;
+  transition: transform 0.2s;
+}
+.dc-badge:hover {
+  transform: scale(1.08);
+}
+
+.dc-avatar-wrap {
+  position: relative;
+  width: 42px;
+  height: 42px;
+}
+
+.dc-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #111;
+  display: block;
+}
+
+.dc-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #1e1f22;
+  padding: 8px;
+  color: #5865f2;
+  border: 2px solid #111;
+}
+
+.dc-status-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2.5px solid #000;
+  display: block;
+  box-shadow: 0 0 6px rgba(0,0,0,0.6);
+}
+
 /* ─── RESPONSIVE ─────────────────────────────────────────── */
 @media (max-width: 900px) {
   .row-top { grid-template-columns: 1fr; }
@@ -589,3 +707,4 @@ onMounted(() => typeLoop())
   .quote { font-size: 1.25rem; }
 }
 </style>
+

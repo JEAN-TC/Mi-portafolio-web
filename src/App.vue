@@ -5,11 +5,13 @@ import Footer from './components/Footer.vue'
 import BackgroundParticles from './components/BackgroundParticles.vue'
 import SidePanel from './components/SidePanel.vue'
 import MusicPlayer from './components/MusicPlayer.vue'
+import MatrixRain from './components/MatrixRain.vue'
 </script>
 
 <template>
   <div class="min-h-screen bg-[#000000] text-white flex flex-col font-sans relative overflow-x-hidden">
     <BackgroundParticles />
+    <MatrixRain />
     <SidePanel />
     <MusicPlayer />
     

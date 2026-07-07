@@ -68,17 +68,17 @@ function toggleLang() {
           <ExternalLink class="section-icon" /> Encuéntrame
         </div>
         <div class="links-list">
-          <a href="https://github.com/" target="_blank" class="social-link">
+          <a href="https://github.com/jean-tc" target="_blank" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">gh/</span> GitHub
           </a>
-          <a href="https://linkedin.com/" target="_blank" class="social-link">
+          <a href="https://linkedin.com/in/jean-toscano" target="_blank" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">in/</span> LinkedIn
           </a>
-          <a href="https://twitter.com/" target="_blank" class="social-link">
+          <a href="https://profile.hackthebox.com/profile/019d3170-9d9c-72b2-bd70-f9403a567b37" target="_blank" class="social-link">
             <ExternalLink class="social-icon" />
-            <span class="social-label">@</span> Twitter / X
+            <span class="social-label">htb/</span> HackTheBox
           </a>
         </div>
       </section>

@@ -6,7 +6,6 @@ import Stats from '../components/Stats.vue'
 import Certifications from '../components/Certifications.vue'
 import Projects from '../components/Projects.vue'
 import Services from '../components/Services.vue'
-import Marquee from '../components/Marquee.vue'
 import Contact from '../components/Contact.vue'
 </script>
 
@@ -18,8 +17,7 @@ import Contact from '../components/Contact.vue'
     <Certifications />
     <Projects />
     <Services />
-    <Stats />
-    <Marquee />
     <Contact />
+    <Stats />
   </main>
 </template>

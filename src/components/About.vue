@@ -1,375 +1,445 @@
 <script setup lang="ts">
+import fotoPersonal from '../assets/Foto personal.png'
+
 const education = [
   {
-    degree: 'Ingeniería de Sistemas',
-    institution: 'Tu Universidad',
+    degree: 'Ciberseguridad',
+    institution: 'SENATI Independencia',
     period: '2021 – Presente',
-    desc: 'Seguridad de software, arquitecturas robustas y análisis de vulnerabilidades.',
     tag: 'En curso',
-    accent: '#ff0000',
+    active: true,
   },
   {
     degree: 'CCNA: Introduction to Networks',
     institution: 'Cisco Networking Academy',
     period: '2023',
-    desc: 'Fundamentos de redes, TCP/IP, switches y routers.',
     tag: 'Completado',
-    accent: '#ff5500',
+    active: false,
   },
   {
     degree: 'CyberOps Associate',
     institution: 'Cisco Networking Academy',
     period: '2023',
-    desc: 'Monitoreo de seguridad, análisis de amenazas, SIEM.',
     tag: 'Completado',
-    accent: '#ff0000',
+    active: false,
   },
   {
     degree: 'Ethical Hacker',
     institution: 'Cisco Networking Academy',
     period: '2024',
-    desc: 'Pentesting, reconocimiento, explotación y post-explotación.',
     tag: 'Completado',
-    accent: '#ff5500',
+    active: false,
   },
 ]
+
+const interests = ['Ciberseguridad', 'Desarrollo web', 'Redes', 'CTF', 'Open Source', 'Linux']
 </script>
 
 <template>
-  <section id="sobre-mi" class="sm-section">
-    <div class="sm-inner">
+  <section id="sobre-mi" class="ab-section">
+    <div class="ab-container">
 
-      <!-- Label -->
-      <div class="sm-label">01. Perfil Profesional</div>
+      <!-- ═══ IZQUIERDA ══════════════════════════ -->
+      <div class="ab-left">
 
-      <!-- TOP: Profile hero -->
-      <div class="sm-hero">
-        <div class="sm-hero-left">
-          <div class="sm-photo-wrap">
-            <img src="/src/assets/profile.png" alt="Jean Piero" class="sm-photo" />
-            <div class="sm-photo-ring"></div>
+        <span class="ab-eyebrow">01 — Perfil</span>
+
+        <h2 class="ab-headline">
+          Estudiante de<br/>
+          <span class="ab-headline-red">Ciberseguridad</span><br/>
+          <span class="ab-headline-dim">y desarrollo.</span>
+        </h2>
+
+        <div class="ab-role-chips">
+          <span class="ab-chip">Ciberseguridad</span>
+          <span class="ab-chip">Desarrollo Web</span>
+        </div>
+
+        <div class="ab-divider-sm"></div>
+
+        <div class="ab-bio">
+          <p>
+            Estudiante de Ciberseguridad. Me apasiona entender los sistemas
+            y cómo funcionan — desde su arquitectura hasta sus límites.
+            Trabajo con la convicción de que quien entiende el sistema, lo domina.
+          </p>
+          <p>
+            Si algo me atrapa a las 2am, no lo suelto hasta entenderlo del todo.
+          </p>
+        </div>
+
+        <div class="ab-stats-row">
+          <div class="ab-stat">
+            <span class="ab-stat-n">4+</span>
+            <span class="ab-stat-l">Años</span>
           </div>
-          <div class="sm-hero-text">
-            <h1 class="sm-name">Jean Piero<br /><span>Toscano Cárdenas</span></h1>
-            <p class="sm-role">Developer & Security Enthusiast</p>
-            <div class="sm-available">
-              <span class="sm-dot"></span> Disponible para proyectos
+          <div class="ab-stat-sep"></div>
+          <div class="ab-stat">
+            <span class="ab-stat-n">15+</span>
+            <span class="ab-stat-l">Certs</span>
+          </div>
+          <div class="ab-stat-sep"></div>
+          <div class="ab-stat">
+            <span class="ab-stat-n">∞</span>
+            <span class="ab-stat-l">Curiosidad</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══ DERECHA ═══════════════════════════ -->
+      <div class="ab-right">
+
+        <!-- Intereses -->
+        <div class="ab-card">
+          <p class="ab-card-label">Intereses</p>
+          <div class="ab-tags">
+            <span v-for="tag in interests" :key="tag" class="ab-tag">{{ tag }}</span>
+          </div>
+        </div>
+
+        <!-- Formación -->
+        <div class="ab-card">
+          <p class="ab-card-label">Formación</p>
+          <div class="ab-edu-list">
+            <div v-for="item in education" :key="item.degree" class="ab-edu-item">
+              <div class="ab-edu-indicator" :class="{ active: item.active }"></div>
+              <div class="ab-edu-body">
+                <p class="ab-edu-degree">{{ item.degree }}</p>
+                <p class="ab-edu-inst">{{ item.institution }}</p>
+              </div>
+              <div class="ab-edu-meta">
+                <span class="ab-edu-period">{{ item.period }}</span>
+                <span class="ab-edu-badge" :class="item.active ? 'badge-on' : 'badge-off'">
+                  {{ item.tag }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Stats -->
-        <div class="sm-stats">
-          <div class="sm-stat">
-            <span class="sm-stat-num">4+</span>
-            <span class="sm-stat-label">Años estudiando</span>
-          </div>
-          <div class="sm-stat-div"></div>
-          <div class="sm-stat">
-            <span class="sm-stat-num">15+</span>
-            <span class="sm-stat-label">Certificaciones</span>
-          </div>
-          <div class="sm-stat-div"></div>
-          <div class="sm-stat">
-            <span class="sm-stat-num">∞</span>
-            <span class="sm-stat-label">Curiosidad</span>
-          </div>
-        </div>
       </div>
-
-      <!-- Bio -->
-      <div class="sm-bio-row">
-        <div class="sm-bio-card">
-          <div class="sm-bio-tag">Bio</div>
-          <p class="sm-bio-text">
-            Estudiante de sistemas con mentalidad de seguridad. Me apasiona entender
-            cómo funcionan los sistemas por dentro — y cómo romperlos de forma responsable.
-            Construyo pensando en que todo puede ser vulnerado, así que todo debe estar
-            diseñado para resistir.
-          </p>
-          <p class="sm-bio-text" style="margin-top: 0.75rem;">
-            Leo de todo — seguridad, filosofía, técnica.
-            <em>Si algo me atrapa a las 2am, no lo suelto hasta entenderlo.</em>
-          </p>
-        </div>
-        <div class="sm-tags-card">
-          <div class="sm-bio-tag">Intereses</div>
-          <div class="sm-tag-grid">
-            <span class="sm-tag">Ciberseguridad</span>
-            <span class="sm-tag">Pentesting</span>
-            <span class="sm-tag">Desarrollo web</span>
-            <span class="sm-tag">Redes</span>
-            <span class="sm-tag">CTF</span>
-            <span class="sm-tag">Open Source</span>
-            <span class="sm-tag">Linux</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Education -->
-      <div class="sm-edu-header">
-        <div class="sm-edu-line"></div>
-        <span>Formación Académica</span>
-        <div class="sm-edu-line"></div>
-      </div>
-
-      <div class="sm-edu-grid">
-        <div v-for="item in education" :key="item.degree" class="sm-edu-card">
-          <div class="sm-edu-top">
-            <span class="sm-edu-tag" :style="{ color: item.accent, borderColor: item.accent + '33' }">
-              {{ item.tag }}
-            </span>
-            <span class="sm-edu-period">{{ item.period }}</span>
-          </div>
-          <h3 class="sm-edu-degree">{{ item.degree }}</h3>
-          <p class="sm-edu-inst">{{ item.institution }}</p>
-          <p class="sm-edu-desc">{{ item.desc }}</p>
-          <div class="sm-edu-accent" :style="{ background: item.accent }"></div>
-        </div>
-      </div>
-
     </div>
   </section>
 </template>
 
 <style scoped>
-.sm-section {
-  padding: 7rem 0;
+/* ── BASE ──────────────────────────────── */
+.ab-section {
   background: #000;
+  padding: 7rem 0 8rem;
   position: relative;
 }
-.sm-section::before {
+.ab-section::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,0,0,0.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,0,0,0.3), transparent);
+}
+.ab-section::after {
+  content: '';
+  position: absolute;
+  bottom: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,0,0,0.035) 0%, transparent 65%);
+  pointer-events: none;
 }
 
-.sm-inner {
+.ab-container {
   max-width: 72rem;
   margin: 0 auto;
   padding: 0 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-}
-
-.sm-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #ff0000;
-}
-
-/* ── HERO ─────────────────────────────── */
-.sm-hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.sm-hero-left {
-  display: flex;
-  align-items: center;
-  gap: 1.75rem;
-}
-
-.sm-photo-wrap {
-  position: relative;
-  width: 96px; height: 96px;
-  flex-shrink: 0;
-}
-.sm-photo {
-  width: 100%; height: 100%;
-  border-radius: 20px;
-  object-fit: cover;
-  position: relative; z-index: 1;
-}
-.sm-photo-ring {
-  position: absolute;
-  inset: -3px;
-  border-radius: 23px;
-  background: linear-gradient(135deg, #ff0000, #ff5500, transparent, transparent);
-  z-index: 0;
-}
-
-.sm-name {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.15;
-}
-.sm-name span {
-  background: linear-gradient(90deg, #ff0000, #ff5500);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.sm-role {
-  font-size: 0.82rem;
-  color: #555;
-  margin-top: 0.4rem;
-}
-.sm-available {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.6rem;
-  font-size: 0.72rem;
-  color: #4ade80;
-  background: rgba(74,222,128,0.06);
-  border: 1px solid rgba(74,222,128,0.15);
-  padding: 0.3rem 0.75rem;
-  border-radius: 20px;
-}
-.sm-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%; background: #4ade80;
-  animation: pulse-sm 2s ease-in-out infinite;
-}
-@keyframes pulse-sm { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-
-/* Stats */
-.sm-stats {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  border-radius: 16px;
-  padding: 1.25rem 2rem;
-}
-.sm-stat { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
-.sm-stat-num {
-  font-size: 1.75rem; font-weight: 800; color: #fff;
-  font-family: 'JetBrains Mono', monospace;
-}
-.sm-stat-label { font-size: 0.68rem; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
-.sm-stat-div { width: 1px; height: 40px; background: #1a1a1a; }
-
-/* ── BIO ROW ──────────────────────────── */
-.sm-bio-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: start;
+  position: relative;
+  z-index: 1;
 }
-@media (max-width: 700px) { .sm-bio-row { grid-template-columns: 1fr; } }
-
-.sm-bio-card, .sm-tags-card {
-  background: #09090b;
-  border: 1px solid #1a1a1a;
-  border-radius: 16px;
-  padding: 1.5rem;
-  transition: border-color 0.3s;
+@media (max-width: 860px) {
+  .ab-container { grid-template-columns: 1fr; gap: 3.5rem; }
 }
-.sm-bio-card:hover, .sm-tags-card:hover { border-color: rgba(255,0,0,0.2); }
 
-.sm-bio-tag {
+/* ── LEFT ──────────────────────────────── */
+.ab-left { display: flex; flex-direction: column; gap: 0; }
+
+.ab-photo-wrap {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #1e1e1e;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(255,51,51,0.08);
+}
+.ab-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.ab-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ff3333;
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.ab-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px; height: 1px;
+  background: #ff3333;
+  opacity: 0.5;
+}
+
+.ab-headline {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: #fff;
+  margin-bottom: 1.25rem;
+}
+.ab-headline-red {
+  color: #ff3333;
+}
+.ab-headline-dim { color: #fff; }
+
+.ab-role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.75rem;
+}
+.ab-chip {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #ff0000;
-  margin-bottom: 0.85rem;
+  color: #444;
+  border: 1px solid #1e1e1e;
+  border-radius: 5px;
+  padding: 0.28rem 0.65rem;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.sm-bio-text {
-  font-size: 0.875rem;
-  color: #71717a;
-  line-height: 1.8;
-}
-
-.sm-tag-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.sm-tag {
-  font-size: 0.72rem;
-  color: #a1a1aa;
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 6px;
-  padding: 0.3rem 0.65rem;
-  transition: border-color 0.2s, color 0.2s;
-}
-.sm-tag:hover { border-color: rgba(255,0,0,0.3); color: #fff; }
-
-/* ── EDUCATION ────────────────────────── */
-.sm-edu-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 0.72rem;
-  font-family: 'JetBrains Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: #333;
-}
-.sm-edu-line { flex: 1; height: 1px; background: #1a1a1a; }
-
-.sm-edu-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-@media (max-width: 640px) { .sm-edu-grid { grid-template-columns: 1fr; } }
-
-.sm-edu-card {
-  background: #09090b;
-  border: 1px solid #1a1a1a;
-  border-radius: 14px;
-  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.3s, transform 0.2s;
-}
-.sm-edu-card:hover {
-  border-color: rgba(255,0,0,0.2);
+.ab-chip:hover {
+  color: #fff;
+  border-color: rgba(255, 51, 51, 0.4);
+  background: rgba(255, 51, 51, 0.05);
+  box-shadow: 0 0 12px rgba(255, 51, 51, 0.15);
   transform: translateY(-2px);
 }
 
-.sm-edu-accent {
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px;
-  opacity: 0.6;
+.ab-divider-sm {
+  width: 40px; height: 1px;
+  background: linear-gradient(90deg, #ff3333, transparent);
+  margin-bottom: 1.75rem;
+  opacity: 0.5;
 }
 
-.sm-edu-top {
+.ab-bio {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 2.5rem;
+}
+.ab-bio p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #5e5e5e;
+  line-height: 1.85;
+}
+
+.ab-stats-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.65rem;
+  gap: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid #111;
 }
-.sm-edu-tag {
-  font-size: 0.65rem;
+.ab-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  transition: transform 0.3s ease;
+}
+.ab-stat:hover {
+  transform: translateY(-4px);
+}
+.ab-stat:hover .ab-stat-n {
+  color: #ff3333;
+  text-shadow: 0 0 10px rgba(255, 51, 51, 0.3);
+}
+.ab-stat-n {
   font-family: 'JetBrains Mono', monospace;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+.ab-stat-l {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.62rem;
+  color: #333;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  border: 1px solid;
-  border-radius: 4px;
-  padding: 2px 8px;
+  transition: color 0.3s ease;
 }
-.sm-edu-period {
-  font-size: 0.65rem;
+.ab-stat:hover .ab-stat-l {
+  color: #888;
+}
+.ab-stat-sep {
+  width: 1px; height: 36px;
+  background: #111;
+  flex-shrink: 0;
+}
+
+/* ── RIGHT ─────────────────────────────── */
+.ab-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: sticky;
+  top: 5rem;
+}
+
+.ab-card {
+  background: #080808;
+  border: 1px solid #161616;
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.35s, box-shadow 0.35s;
+}
+.ab-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,0,0,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.ab-card:hover {
+  border-color: rgba(255,0,0,0.18);
+  box-shadow: 0 0 40px rgba(255,0,0,0.04), 0 12px 40px rgba(0,0,0,0.5);
+}
+.ab-card:hover::after { opacity: 1; }
+
+.ab-card-label {
   font-family: 'JetBrains Mono', monospace;
-  color: #444;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #ff3333;
+  margin-bottom: 1.1rem;
+  opacity: 0.8;
 }
-.sm-edu-degree {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #e5e5e5;
+
+/* Tags */
+.ab-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.ab-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.71rem;
+  color: #444;
+  background: #0c0c0c;
+  border: 1px solid #181818;
+  border-radius: 6px;
+  padding: 0.28rem 0.65rem;
+  cursor: default;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.ab-tag:hover {
+  color: #ff3333;
+  border-color: rgba(255,51,51,0.3);
+  background: rgba(255,51,51,0.03);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(255, 51, 51, 0.05);
+}
+
+/* Education */
+.ab-edu-list { display: flex; flex-direction: column; }
+.ab-edu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 0.5rem;
+  border-bottom: 1px solid #0d0d0d;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.ab-edu-item:hover {
+  background: rgba(255, 255, 255, 0.01);
+  transform: translateX(6px);
+  padding-left: 0.8rem;
+}
+.ab-edu-item:last-child { border-bottom: none; padding-bottom: 0; }
+.ab-edu-item:first-child { padding-top: 0; }
+
+.ab-edu-indicator {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #1c1c1c;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.ab-edu-indicator.active {
+  background: #ff3333;
+  box-shadow: 0 0 6px rgba(255,0,0,0.5);
+}
+
+.ab-edu-body { flex: 1; min-width: 0; }
+.ab-edu-degree {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #bbb;
   line-height: 1.3;
-  margin-bottom: 0.25rem;
+  transition: color 0.2s;
 }
-.sm-edu-inst {
-  font-size: 0.73rem;
-  color: #444;
-  margin-bottom: 0.5rem;
+.ab-edu-item:hover .ab-edu-degree { color: #fff; }
+.ab-edu-inst {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.67rem;
+  color: #2e2e2e;
+  margin-top: 2px;
 }
-.sm-edu-desc {
-  font-size: 0.76rem;
-  color: #3a3a3a;
-  line-height: 1.6;
+
+.ab-edu-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  flex-shrink: 0;
 }
-.sm-edu-card:hover .sm-edu-desc { color: #555; }
+.ab-edu-period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: #252525;
+  white-space: nowrap;
+}
+.ab-edu-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.badge-on {
+  color: #ff3333;
+  border-color: rgba(255,0,0,0.22);
+  background: rgba(255,0,0,0.05);
+}
+.badge-off { color: #222; border-color: #161616; }
 </style>

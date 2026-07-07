@@ -2,10 +2,10 @@
 import { Crosshair, ShieldCheck, Flag, Skull } from '@lucide/vue'
 
 const stats = [
-  { label: 'Sistemas Pwned', value: '42+', icon: Skull, color: 'text-red-500' },
-  { label: 'Banderas (Flags)', value: '150+', icon: Flag, color: 'text-yellow-500' },
-  { label: 'Vulnerabilidades', value: '28', icon: Crosshair, color: 'text-[#ff0000]' },
-  { label: 'Auditorías Limpias', value: '15', icon: ShieldCheck, color: 'text-green-500' }
+  { label: 'Sistemas Pwned', value: '15+', icon: Skull, color: 'text-red-500' },
+  { label: 'Banderas (Flags)', value: '50+', icon: Flag, color: 'text-yellow-500' },
+  { label: 'Vulnerabilidades', value: '10', icon: Crosshair, color: 'text-[#ff0000]' },
+  { label: 'Auditorías Limpias', value: '6', icon: ShieldCheck, color: 'text-green-500' }
 ]
 </script>
 
@@ -13,21 +13,14 @@ const stats = [
   <section class="py-16 bg-[#000000] border-y border-[#27272a]/30 relative overflow-hidden">
     <!-- Decoración Cyberpunk -->
     <div class="absolute right-0 top-0 w-64 h-full bg-[#ff0000]/5 blur-[100px] pointer-events-none"></div>
-    <div class="absolute left-0 bottom-0 w-64 h-full bg-[#ff5500]/5 blur-[100px] pointer-events-none"></div>
+    <div class="absolute left-0 bottom-0 w-64 h-full bg-[#ff3333]/5 blur-[100px] pointer-events-none"></div>
     
     <div class="max-w-6xl mx-auto px-6 relative z-10">
       <div class="flex flex-col md:flex-row items-center justify-between gap-12">
         
         <!-- Info lado izquierdo -->
         <div class="w-full md:w-1/3">
-          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff0000]/10 border border-[#ff0000]/20 text-[#ff0000] text-xs font-bold uppercase tracking-widest mb-6">
-            <span class="w-2 h-2 rounded-full bg-[#ff0000] animate-pulse"></span>
-            CTF Tracker
-          </span>
-          <h2 class="text-3xl font-bold text-white mb-4">Estadísticas de <br/><span class="text-[#ff0000]">Laboratorio</span></h2>
-          <p class="text-[#a1a1aa] text-sm">
-            Métricas extraídas de entornos controlados tipo Hack The Box y TryHackMe. Constante entrenamiento en escenarios reales de explotación y defensa.
-          </p>
+          <h2 class="text-3xl font-bold text-white mb-0">Estadísticas de Laboratorios</h2>
         </div>
 
         <!-- Grid de Stats lado derecho -->

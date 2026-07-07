@@ -449,6 +449,18 @@ watch(activeTab, (newTab) => {
   }
 })
 
+// Manejar eventos desde la terminal
+const handleTerminalMusic = (e: Event) => {
+  const action = (e as CustomEvent).detail
+  if (action === 'play') {
+    playLocal()
+  } else if (action === 'pause') {
+    pauseLocal()
+  } else if (action === 'skip') {
+    nextTrack()
+  }
+}
+
 // ==========================================
 // LÍCLO DE VIDA Y MONTAJE
 // ==========================================
@@ -456,6 +468,7 @@ onMounted(() => {
   initAudio()
   initSpotify()
   window.addEventListener('open-music-player', () => { isOpen.value = true })
+  window.addEventListener('terminal-music', handleTerminalMusic)
 })
 
 onUnmounted(() => {
@@ -463,6 +476,7 @@ onUnmounted(() => {
   if (spotifyPollingInterval) clearInterval(spotifyPollingInterval)
   if (progressTickerInterval) clearInterval(progressTickerInterval)
   window.removeEventListener('open-music-player', () => { isOpen.value = true })
+  window.removeEventListener('terminal-music', handleTerminalMusic)
 })
 
 </script>
@@ -513,13 +527,23 @@ onUnmounted(() => {
             </div>
             <p class="mp-connect-title">Conectar Spotify</p>
             <p class="mp-connect-desc">Vincula tu cuenta para ver qué estás escuchando en tiempo real.</p>
-            <input v-model="clientID" class="mp-input" type="text" placeholder="Client ID..." />
+            
+            <!-- Botón de Conexión directa -->
             <button class="mp-connect-btn" @click="connectToSpotify">
               <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px">
                 <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32zm.12-3.37C15.2 8.35 8.79 8.14 5.07 9.27c-.58.18-1.2-.16-1.38-.74-.18-.58.16-1.2.74-1.38 4.27-1.3 11.35-1.06 15.82 1.6.52.3 1.7.9.36 1.42-.3.52-.9 1.7-1.42 1.38z"/>
               </svg>
               Conectar con Spotify
             </button>
+
+            <!-- Ajustes avanzados (Oculto por defecto para limpiar la UI) -->
+            <details class="mp-advanced-settings">
+              <summary class="mp-advanced-title">Configuración avanzada</summary>
+              <div class="mp-advanced-content">
+                <label class="mp-advanced-label">Client ID de la aplicación:</label>
+                <input v-model="clientID" class="mp-input" type="text" placeholder="Client ID..." />
+              </div>
+            </details>
           </div>
         </div>
 
@@ -728,6 +752,42 @@ onUnmounted(() => {
   transition: background 0.2s, transform 0.15s;
 }
 .mp-connect-btn:hover { background: #1ed760; transform: translateY(-1px); }
+
+/* Ajustes avanzados dropdown */
+.mp-advanced-settings {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.mp-advanced-title {
+  font-size: 0.68rem;
+  color: #444;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+  text-align: center;
+  list-style: none; /* Oculta la flecha por defecto en algunos navegadores */
+}
+.mp-advanced-title::-webkit-details-marker {
+  display: none;
+}
+.mp-advanced-title:hover {
+  color: #777;
+}
+.mp-advanced-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  padding: 0.6rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+.mp-advanced-label {
+  font-size: 0.65rem;
+  color: #555;
+  font-weight: 600;
+}
 
 /* ─── ESTADO CONECTADO ────────────────────────────────── */
 .mp-connected { display: flex; flex-direction: column; }

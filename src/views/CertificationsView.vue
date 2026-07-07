@@ -90,6 +90,39 @@ const filteredCerts = computed(() => {
 })
 
 const selectedCert = ref<any | null>(null)
+
+function getThumbnailUrl(fileName: string) {
+  if (!fileName) return ''
+  const decoded = decodeURIComponent(fileName)
+  const base = decoded.split('/').pop() || ''
+  const nameWithoutExt = base.substring(0, base.lastIndexOf('.'))
+  const safeName = nameWithoutExt.replace(/\s+/g, '_')
+  return `/certifications/thumbnails/${safeName}.png`
+}
+
+function formatTitle(title: string) {
+  if (!title) return ''
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const hashRegex = /^[0-9a-f]{24}$/i;
+  if (uuidRegex.test(title) || hashRegex.test(title)) {
+    return 'Credencial de Seguridad de Red / Sistemas'
+  }
+  
+  if (title.startsWith('Coursera ')) {
+    return `Certificación Profesional Coursera (${title.split(' ')[1]})`
+  }
+
+  let formatted = title
+    .replace(/[-_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (title.includes('Certificado-JEAN-PIERO-TOSCANO-CARDENAS')) {
+    return 'Certificación Profesional de Ciberseguridad'
+  }
+  
+  return formatted;
+}
 </script>
 
 <template>
@@ -133,39 +166,64 @@ const selectedCert = ref<any | null>(null)
         <div
           v-for="cert in filteredCerts"
           :key="cert.id"
-          class="card-modern flex flex-col group h-full overflow-hidden p-0"
+          class="card-modern flex flex-col group h-full overflow-hidden p-0 border border-[#27272a]/60 hover:border-[#ff3333]/50 transition-all duration-300 bg-[#09090b]"
         >
-          <!-- PDF Thumbnail using Canvas -->
-          <div v-if="cert.fileName" class="h-56 w-full relative bg-[#ffffff] border-b border-[#27272a] overflow-hidden flex items-center justify-center">
-            <button @click="selectedCert = cert" class="absolute inset-0 z-10 w-full h-full cursor-pointer hover:bg-black/10 transition-colors focus:outline-none" title="Vista Previa"></button>
-            <VuePdfEmbed
-              :source="cert.fileName"
-              :page="1"
-              class="w-full h-full object-cover transform origin-top scale-100 opacity-90 group-hover:opacity-100 transition-opacity"
+          <!-- Image Container / Thumbnail -->
+          <div v-if="cert.fileName" class="h-48 w-full relative bg-[#121215] overflow-hidden flex items-center justify-center border-b border-[#27272a]/60">
+            <img 
+              :src="getThumbnailUrl(cert.fileName)" 
+              :alt="cert.title" 
+              class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+              loading="lazy"
             />
+            
+            <!-- Hover Overlay (Glassmorphism View Button) -->
+            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+              <button 
+                @click="selectedCert = cert" 
+                class="px-4 py-2 bg-[#ff3333] hover:bg-white hover:text-black text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-2"
+              >
+                <FileText class="w-4 h-4" />
+                Vista Previa
+              </button>
+            </div>
           </div>
           
-          <div class="px-5 py-4 flex justify-between items-center bg-[#121215]">
-            <a
-              v-if="cert.credentialUrl && cert.issuer === 'Coursera'"
-              :href="cert.credentialUrl"
-              target="_blank"
-              class="inline-flex items-center gap-1.5 text-xs font-medium text-[#a1a1aa] hover:text-[#ff0000] transition-colors"
-              title="Verificar en línea"
-            >
-              Verificar ID
-              <ExternalLink class="w-3.5 h-3.5" />
-            </a>
+          <!-- Card Info -->
+          <div class="p-5 flex flex-col flex-grow bg-[#09090b]">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] font-bold font-mono uppercase tracking-wider text-[#ff3333]">
+                {{ cert.issuer }}
+              </span>
+              <span class="text-xs text-[#71717a] font-mono">
+                {{ cert.date }}
+              </span>
+            </div>
             
-            <button
-              v-if="cert.fileName"
-              @click="selectedCert = cert"
-              class="inline-flex items-center gap-1.5 text-xs font-medium text-[#ff0000] hover:text-white transition-colors ml-auto focus:outline-none"
-              title="Vista Previa"
-            >
-              Vista Previa
-              <FileText class="w-3.5 h-3.5" />
-            </button>
+            <h3 class="text-base font-bold text-white mb-4 line-clamp-2 group-hover:text-[#ff3333] transition-colors leading-snug">
+              {{ formatTitle(cert.title) }}
+            </h3>
+            
+            <!-- Card Footer / Verification -->
+            <div class="mt-auto pt-3 border-t border-[#27272a]/60 flex items-center justify-between">
+              <a
+                v-if="cert.credentialUrl && cert.issuer === 'Coursera'"
+                :href="cert.credentialUrl"
+                target="_blank"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-[#a1a1aa] hover:text-white transition-colors"
+                title="Verificar ID en línea"
+              >
+                <span>Verificar ID</span>
+                <ExternalLink class="w-3.5 h-3.5 text-[#ff3333]" />
+              </a>
+              <button
+                @click="selectedCert = cert"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff3333] hover:text-white transition-colors ml-auto focus:outline-none"
+              >
+                <span>Vista Previa</span>
+                <FileText class="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

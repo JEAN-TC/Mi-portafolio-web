@@ -1,90 +1,71 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ShieldCheck, Network, Code2, Cloud } from '@lucide/vue'
 
-const activeCategory = ref<'all' | 'frontend' | 'backend' | 'security'>('all')
-
-const categories = [
-  { id: 'all',      name: 'Todas' },
-  { id: 'frontend', name: 'Frontend' },
-  { id: 'backend',  name: 'Backend' },
-  { id: 'security', name: 'Seguridad' },
+const skillDomains = [
+  {
+    id: 'security',
+    title: 'Ciberseguridad',
+    icon: ShieldCheck,
+    skills: ['Pentesting', 'OWASP Top 10', 'Red Teaming', 'Análisis Forense', 'OSINT', 'Malware Analysis', 'Auditoría']
+  },
+  {
+    id: 'networking',
+    title: 'Redes & Infraestructura',
+    icon: Network,
+    skills: ['CCNA R&S', 'Wireless Security', 'CyberOps', 'Industrial Cyber', 'Firewalls', 'SIEM']
+  },
+  {
+    id: 'development',
+    title: 'Desarrollo',
+    icon: Code2,
+    skills: ['Vue 3', 'TypeScript', 'React & Next', 'Node.js', 'Express', 'APIs', 'Python', 'Git']
+  },
+  {
+    id: 'cloud',
+    title: 'Cloud & Unix',
+    icon: Cloud,
+    skills: ['AWS Cloud', 'Linux Admin', 'Docker', 'PostgreSQL', 'SQL', 'CI/CD']
+  }
 ]
-
-const skills = [
-  { name: 'Vue 3 & TypeScript', level: 95, category: 'frontend' },
-  { name: 'Tailwind CSS',       level: 95, category: 'frontend' },
-  { name: 'React & Next.js',    level: 78, category: 'frontend' },
-  { name: 'Node.js & Express',  level: 85, category: 'backend' },
-  { name: 'PostgreSQL & SQL',   level: 82, category: 'backend' },
-  { name: 'REST APIs & GraphQL',level: 88, category: 'backend' },
-  { name: 'Penetration Testing',level: 80, category: 'security' },
-  { name: 'OWASP Top 10',       level: 88, category: 'security' },
-  { name: 'Network Security',   level: 75, category: 'security' },
-]
-
-
-const getFilteredSkills = () => {
-  if (activeCategory.value === 'all') return skills
-  return skills.filter(s => s.category === activeCategory.value)
-}
 </script>
 
 <template>
-  <section id="habilidades" class="py-24 bg-[#09090b] relative">
+  <section id="habilidades" class="py-16 bg-[#09090b] relative">
     <div class="max-w-6xl mx-auto px-6 relative z-10">
 
-      <div class="mb-12 relative">
+      <div class="mb-10 relative">
         <span class="section-label">02. Stack Técnico</span>
-        <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">Habilidades <span class="text-gradient">Técnicas</span></h2>
-        <p class="text-[#a1a1aa] max-w-2xl">Tecnologías y herramientas clave.</p>
+        <h2 class="text-3xl font-bold text-white mb-2">Habilidades <span class="text-gradient">Técnicas</span></h2>
       </div>
 
-      <!-- Filters -->
-      <div class="flex flex-wrap gap-2 mb-10">
-        <button
-          v-for="cat in categories"
-          :key="cat.id"
-          @click="activeCategory = cat.id as any"
-          :class="[
-            'px-4 py-1.5 rounded-full text-xs font-semibold transition-colors',
-            activeCategory === cat.id 
-              ? 'bg-white text-black' 
-              : 'bg-[#18181b] text-[#a1a1aa] border border-[#27272a] hover:bg-[#27272a] hover:text-white'
-          ]"
+      <!-- Skills Grid (Compact) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div
+          v-for="domain in skillDomains"
+          :key="domain.id"
+          class="card-modern flex flex-col p-5 h-full group hover:border-[#ff3333]/30"
         >
-          {{ cat.name }}
-        </button>
-      </div>
-
-      <!-- Skills Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <transition-group
-          enter-active-class="transition duration-300 ease-out"
-          enter-from-class="opacity-0 scale-95"
-          enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition duration-200 ease-in absolute"
-          leave-from-class="opacity-100 scale-100"
-          leave-to-class="opacity-0 scale-95"
-        >
-          <div
-            v-for="skill in getFilteredSkills()"
-            :key="skill.name"
-            class="card-modern flex flex-col justify-center py-5 px-6"
-          >
-            <div class="flex justify-between items-center mb-3">
-              <span class="text-sm font-semibold text-white">{{ skill.name }}</span>
-              <span class="text-xs text-[#71717a]">{{ skill.level }}%</span>
+          <!-- Header -->
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 bg-[#121215] border border-[#27272a] rounded-lg flex items-center justify-center text-[#ff3333] group-hover:bg-[#ff3333]/10 transition-all duration-300">
+              <component :is="domain.icon" class="w-4.5 h-4.5" />
             </div>
-            <div class="w-full h-1.5 bg-[#121215] rounded-full overflow-hidden border border-[#27272a] shadow-inner">
-              <div 
-                class="h-full bg-gradient-accent rounded-full transition-all duration-700 relative"
-                :style="{ width: `${skill.level}%` }"
-              >
-                <div class="absolute inset-0 bg-white/20 w-full animate-pulse"></div>
-              </div>
-            </div>
+            <h3 class="text-sm font-bold text-white group-hover:text-[#ff3333] transition-colors">
+              {{ domain.title }}
+            </h3>
           </div>
-        </transition-group>
+
+          <!-- Skills list as chips -->
+          <div class="flex flex-wrap gap-1.5">
+            <span 
+              v-for="skill in domain.skills"
+              :key="skill"
+              class="px-2 py-0.5 rounded bg-[#121215] border border-[#27272a]/60 text-[11px] text-[#a1a1aa] hover:text-white hover:border-[#ff3333]/40 hover:bg-[#ff3333]/5 transition-all duration-300 cursor-default select-none"
+            >
+              {{ skill }}
+            </span>
+          </div>
+        </div>
       </div>
 
     </div>

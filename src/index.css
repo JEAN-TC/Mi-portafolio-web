@@ -17,7 +17,7 @@
 
   /* Accents (Premium Cyan/Purple Gradient) */
   --accent-color: #ff0000;
-  --accent-alt:   #ff5500;
+  --accent-alt:   #ff3333;
 
   /* Text */
   --text-primary:  #ffffff;
@@ -122,7 +122,71 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
 }
 
-/* ==============================
+/* Card Glow System (Mouse Tracking Glow) */
+.card-glow {
+  position: relative;
+  border-radius: 16px;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  transition: border-color 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  overflow: hidden;
+}
+
+.card-glow:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255, 0, 0, 0.25);
+  box-shadow: 0 15px 45px -15px rgba(255, 0, 0, 0.15);
+}
+
+/* Outer Border Glow using radial gradient */
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1.5px;
+  background: radial-gradient(
+    350px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(255, 0, 0, 0.35),
+    transparent 50%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 2;
+}
+
+.card-glow:hover::before {
+  opacity: 1;
+}
+
+/* Inner Background Glow */
+.card-glow-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    400px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(255, 0, 0, 0.07),
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-glow:hover .card-glow-bg {
+  opacity: 1;
+}
+
+/* ============================== */
    Buttons
    ============================== */
 .btn-primary {
