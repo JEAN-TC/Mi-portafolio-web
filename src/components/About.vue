@@ -1,38 +1,40 @@
 <script setup lang="ts">
-import fotoPersonal from '../assets/Foto personal.png'
+import { computed } from 'vue'
+import { t } from '../utils/i18n'
 
-const education = [
+
+const education = computed(() => [
   {
     degree: 'Ciberseguridad',
     institution: 'SENATI Independencia',
-    period: '2021 – Presente',
-    tag: 'En curso',
+    period: '2023 – Presente',
+    tag: t('about.inProgress'),
     active: true,
   },
   {
     degree: 'CCNA: Introduction to Networks',
     institution: 'Cisco Networking Academy',
-    period: '2023',
-    tag: 'Completado',
+    period: '2024',
+    tag: t('about.completed'),
     active: false,
   },
   {
     degree: 'CyberOps Associate',
     institution: 'Cisco Networking Academy',
-    period: '2023',
-    tag: 'Completado',
+    period: '2025',
+    tag: t('about.completed'),
     active: false,
   },
   {
     degree: 'Ethical Hacker',
     institution: 'Cisco Networking Academy',
     period: '2024',
-    tag: 'Completado',
+    tag: t('about.completed'),
     active: false,
   },
-]
+])
 
-const interests = ['Ciberseguridad', 'Desarrollo web', 'Redes', 'CTF', 'Open Source', 'Linux']
+const interests = computed(() => t('about.intList'))
 </script>
 
 <template>
@@ -42,46 +44,40 @@ const interests = ['Ciberseguridad', 'Desarrollo web', 'Redes', 'CTF', 'Open Sou
       <!-- ═══ IZQUIERDA ══════════════════════════ -->
       <div class="ab-left">
 
-        <span class="ab-eyebrow">01 — Perfil</span>
+        <span class="ab-eyebrow">{{ t('about.profile') }}</span>
 
         <h2 class="ab-headline">
-          Estudiante de<br/>
-          <span class="ab-headline-red">Ciberseguridad</span><br/>
-          <span class="ab-headline-dim">y desarrollo.</span>
+          {{ t('about.studentOf') }}<br/>
+          <span class="ab-headline-red">{{ t('about.cyber') }}</span><br/>
+          <span class="ab-headline-dim">{{ t('about.andDev') }}</span>
         </h2>
 
         <div class="ab-role-chips">
-          <span class="ab-chip">Ciberseguridad</span>
-          <span class="ab-chip">Desarrollo Web</span>
+          <span class="ab-chip">{{ t('about.roleCyber') }}</span>
+          <span class="ab-chip">{{ t('about.roleDev') }}</span>
         </div>
 
         <div class="ab-divider-sm"></div>
 
         <div class="ab-bio">
-          <p>
-            Estudiante de Ciberseguridad. Me apasiona entender los sistemas
-            y cómo funcionan — desde su arquitectura hasta sus límites.
-            Trabajo con la convicción de que quien entiende el sistema, lo domina.
-          </p>
-          <p>
-            Si algo me atrapa a las 2am, no lo suelto hasta entenderlo del todo.
-          </p>
+          <p>{{ t('about.bio1') }}</p>
+          <p>{{ t('about.bio2') }}</p>
         </div>
 
         <div class="ab-stats-row">
           <div class="ab-stat">
-            <span class="ab-stat-n">4+</span>
-            <span class="ab-stat-l">Años</span>
+            <span class="ab-stat-n">3+</span>
+            <span class="ab-stat-l">{{ t('about.yearsLabel') }}</span>
           </div>
           <div class="ab-stat-sep"></div>
           <div class="ab-stat">
             <span class="ab-stat-n">15+</span>
-            <span class="ab-stat-l">Certs</span>
+            <span class="ab-stat-l">{{ t('about.certsLabel') }}</span>
           </div>
           <div class="ab-stat-sep"></div>
           <div class="ab-stat">
             <span class="ab-stat-n">∞</span>
-            <span class="ab-stat-l">Curiosidad</span>
+            <span class="ab-stat-l">{{ t('about.curiosityLabel') }}</span>
           </div>
         </div>
 
@@ -92,7 +88,7 @@ const interests = ['Ciberseguridad', 'Desarrollo web', 'Redes', 'CTF', 'Open Sou
 
         <!-- Intereses -->
         <div class="ab-card">
-          <p class="ab-card-label">Intereses</p>
+          <p class="ab-card-label">{{ t('about.interests') }}</p>
           <div class="ab-tags">
             <span v-for="tag in interests" :key="tag" class="ab-tag">{{ tag }}</span>
           </div>
@@ -100,7 +96,7 @@ const interests = ['Ciberseguridad', 'Desarrollo web', 'Redes', 'CTF', 'Open Sou
 
         <!-- Formación -->
         <div class="ab-card">
-          <p class="ab-card-label">Formación</p>
+          <p class="ab-card-label">{{ t('about.education') }}</p>
           <div class="ab-edu-list">
             <div v-for="item in education" :key="item.degree" class="ab-edu-item">
               <div class="ab-edu-indicator" :class="{ active: item.active }"></div>

@@ -29,7 +29,7 @@ const currentCategory = computed(() => {
 })
 
 const currentCategoryInfo = computed(() => {
-  const categories = {
+  const categories: Record<string, { isImg: boolean; src?: string; svg?: string }> = {
     'coursera': { isImg: true, src: courseraLogo },
     'fortinet': { isImg: true, src: fortinetLogo },
     'aws': { isImg: true, src: awsLogo },
@@ -82,7 +82,8 @@ const allCertifications = [
   { id: 37, title: 'CyberOps Associate', issuer: 'Cisco', date: '2023', credentialUrl: '/certifications/CyberOps_Associate_certificate.pdf', fileName: '/certifications/CyberOps_Associate_certificate.pdf' },
   { id: 38, title: 'Ethical Hacker', issuer: 'Cisco', date: '2023', credentialUrl: '/certifications/Ethical_Hacker_certificate.pdf', fileName: '/certifications/Ethical_Hacker_certificate.pdf' },
   { id: 39, title: 'Industrial Cybersecurity Essentials', issuer: 'Cisco', date: '2023', credentialUrl: '/certifications/Industrial_Cybersecurity_Essentials_certificate.pdf', fileName: '/certifications/Industrial_Cybersecurity_Essentials_certificate.pdf' },
-  { id: 40, title: 'Cisco Networking Certificate', issuer: 'Cisco', date: '2023', credentialUrl: '/certifications/_certificate_.pdf', fileName: '/certifications/_certificate_.pdf' }
+  { id: 40, title: 'Cisco Networking Certificate', issuer: 'Cisco', date: '2023', credentialUrl: '/certifications/_certificate_.pdf', fileName: '/certifications/_certificate_.pdf' },
+  { id: 41, title: 'ApoorvCTF 2026', issuer: 'Certificación', date: '2026', credentialUrl: '/certifications/ApoorvCTF26.pdf', fileName: '/certifications/ApoorvCTF26.pdf' }
 ]
 
 const filteredCerts = computed(() => {

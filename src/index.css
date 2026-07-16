@@ -12,8 +12,8 @@
   --bg-card:      rgba(18, 18, 21, 0.6);
 
   /* Borders */
-  --border:       rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  --border:       rgba(255, 255, 255, 0.10);
+  --border-hover: rgba(255, 255, 255, 0.18);
 
   /* Accents (Premium Cyan/Purple Gradient) */
   --accent-color: #ff0000;
@@ -126,41 +126,38 @@ h1, h2, h3, h4, h5, h6 {
 .card-glow {
   position: relative;
   border-radius: 16px;
-  background: var(--bg-card);
+  background: rgba(14, 14, 18, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  transition: border-color 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  border: 1px solid rgba(255, 0, 0, 0.12);
+  transition: border-color 0.35s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
   overflow: hidden;
+  will-change: transform;
 }
 
 .card-glow:hover {
   transform: translateY(-6px);
-  border-color: rgba(255, 0, 0, 0.25);
-  box-shadow: 0 15px 45px -15px rgba(255, 0, 0, 0.15);
+  border-color: rgba(255, 0, 0, 0.30);
+  box-shadow:
+    0 0 0 1px rgba(255, 0, 0, 0.08),
+    0 20px 60px -20px rgba(255, 0, 0, 0.30);
 }
 
-/* Outer Border Glow using radial gradient */
+/* Outer glow on hover */
 .card-glow::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 16px;
-  padding: 1.5px;
   background: radial-gradient(
-    350px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    rgba(255, 0, 0, 0.35),
-    transparent 50%
+    320px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 0, 0, 0.12),
+    transparent 70%
   );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 2;
+  transition: opacity 0.35s ease;
+  z-index: 1;
 }
 
 .card-glow:hover::before {
@@ -172,14 +169,14 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    400px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    rgba(255, 0, 0, 0.07),
-    transparent 50%
+    380px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 0, 0, 0.05),
+    transparent 60%
   );
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.35s ease;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
 .card-glow:hover .card-glow-bg {
@@ -294,3 +291,10 @@ h1, h2, h3, h4, h5, h6 {
 .animate-marquee {
   animation: marquee 30s linear infinite;
 }
+
+/* --- PERFORMANCE MODE --- */
+body.performance-mode * {
+  animation: none !important;
+  transition: none !important;
+}
+

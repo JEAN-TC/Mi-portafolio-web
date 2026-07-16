@@ -4,7 +4,6 @@ import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import BackgroundParticles from './components/BackgroundParticles.vue'
 import SidePanel from './components/SidePanel.vue'
-import MusicPlayer from './components/MusicPlayer.vue'
 import MatrixRain from './components/MatrixRain.vue'
 </script>
 
@@ -13,7 +12,6 @@ import MatrixRain from './components/MatrixRain.vue'
     <BackgroundParticles />
     <MatrixRain />
     <SidePanel />
-    <MusicPlayer />
     
     <div class="relative z-10 w-full flex-grow">
       <Header />

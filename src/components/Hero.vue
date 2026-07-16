@@ -2,42 +2,34 @@
 import fotoPersonal from '../assets/Foto personal.png'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 
+import { t } from '../utils/i18n'
+
 const typed = ref('')
-const phrases = [
-  'practicante de ciberseguridad.',
-  'lector empedernido.',
-  'rompedor de cosas para entenderlas.',
-  'introvertido con ideas que explotan.',
-]
+const phrases = computed(() => t('hero.phrases'))
 let phraseIndex = 0
 let charIndex = 0
 let deleting = false
 let paused = false
 
 function typeLoop() {
-  const current = phrases[phraseIndex]
+  const currentArray = phrases.value
+  const current = currentArray[phraseIndex]
+  if (!current) return // safeguard
   if (!deleting && !paused) {
     typed.value = current.slice(0, ++charIndex)
     if (charIndex === current.length) { paused = true; setTimeout(() => { paused = false; deleting = true }, 2200) }
   } else if (deleting && !paused) {
     typed.value = current.slice(0, --charIndex)
-    if (charIndex === 0) { deleting = false; phraseIndex = (phraseIndex + 1) % phrases.length }
+    if (charIndex === 0) { deleting = false; phraseIndex = (phraseIndex + 1) % currentArray.length }
   }
   setTimeout(typeLoop, deleting ? 32 : 72)
 }
 
-const rasgos = [
-  { label: 'Investigar',          desc: 'No me basta con que algo funcione. Necesito saber por qué funciona, y qué pasa si lo rompo.' },
-  { label: 'Noche',               desc: 'Funciono mejor de noche. El silencio ayuda a pensar sin interrupciones.' },
-  { label: 'Romper para entender', desc: 'La mejor forma de aprender algo es desmontarlo por completo. Así entiendo desde adentro.' },
-  { label: 'Rabbit holes',        desc: 'Empiezo buscando una cosa y termino tres horas después entendiendo algo completamente diferente. Y está bien.' },
-  { label: 'Introvertido',        desc: 'Soy callado hasta que encuentro el tema correcto. Ahí ya no paro.' },
-  { label: 'Aprender siempre',    desc: 'El que deja de aprender deja de ser relevante. No me permito estancarme.' },
-]
+const rasgos = computed(() => t('hero.rasgos'))
 
-const activeRasgo = ref<number | null>(null)
+const activeRasgo = ref<number | string | null>(null)
 
-function toggleRasgo(i: number) {
+function toggleRasgo(i: number | string) {
   activeRasgo.value = activeRasgo.value === i ? null : i
 }
 
@@ -47,19 +39,7 @@ const discordAvatar  = ref('')
 const discordStatus  = ref<'online'|'idle'|'dnd'|'offline'>('offline')
 const discordLoaded  = ref(false)
 
-const statusColor = computed(() => ({
-  online:  '#3ba55d',
-  idle:    '#faa61a',
-  dnd:     '#ed4245',
-  offline: '#747f8d',
-})[discordStatus.value])
 
-const statusLabel = computed(() => ({
-  online:  'En línea',
-  idle:    'Ausente',
-  dnd:     'No molestar',
-  offline: 'Desconectado',
-})[discordStatus.value])
 
 let lanyardInterval: ReturnType<typeof setInterval> | null = null
 
@@ -127,7 +107,7 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
           <div class="name-inner">
             <div class="name-accent-line"></div>
             <div>
-              <p class="eyebrow">Hola, soy</p>
+              <p class="eyebrow">{{ t('hero.hi') }}</p>
               <h1 class="name">
                 Jean Piero<br/>
                 <span class="accent">Toscano Cárdenas</span>
@@ -159,10 +139,9 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
       <!-- ── SOBRE MÍ ─── -->
       <div class="card card-about" data-aos="fade-up" data-aos-duration="900" data-aos-delay="100">
         <div class="card-deco"></div>
-        <span class="label">sobre mí</span>
+        <span class="label">{{ t('hero.aboutLabel') }}</span>
         <p class="about-text">
-          Soy de los que leen hasta las 2am porque encontré algo interesante.
-          Callado en los cuartos, ruidoso en las ideas.<em>Siempre hay algo nuevo por aprender</em>
+          {{ t('hero.aboutText1') }} <em>{{ t('hero.aboutText2') }}</em>
         </p>
         <div class="pills">
           <button
@@ -187,21 +166,19 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
 
         <!-- Mentalidad -->
         <div class="card card-focus" data-aos="fade-right" data-aos-duration="900" data-aos-delay="150">
-          <span class="label">mentalidad</span>
+          <span class="label">{{ t('hero.mindsetLabel') }}</span>
           <blockquote class="quote">
-            No diseño para<br/>el escenario perfecto,<br/>
-            <span class="quote-accent">forjo para la adversidad.</span>
+            {{ t('hero.mindsetQuote1') }}<br/>
+            <span class="quote-accent">{{ t('hero.mindsetQuote2') }}</span>
           </blockquote>
           <p class="focus-sub">
-            Anticipar la falla no es pesimismo, es preparación. Entender cómo se rompen
-            los sistemas me ha enseñado que la verdadera fortaleza nace de reconocer
-            nuestras propias vulnerabilidades.
+            {{ t('hero.mindsetSub') }}
           </p>
         </div>
 
         <!-- Apuntes -->
         <div class="card card-stack" data-aos="fade-left" data-aos-duration="900" data-aos-delay="200">
-          <span class="label">apuntes</span>
+          <span class="label">{{ t('hero.notesLabel') }}</span>
 
           <router-link to="/apuntes/P.O.O" class="apunte-item">
             <div class="apunte-header">
@@ -222,7 +199,7 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
           <div class="sep"></div>
 
           <router-link to="/apuntes" class="ver-todos">
-            Ver todos los apuntes <span>→</span>
+            {{ t('hero.viewAllNotes') }} <span>→</span>
           </router-link>
         </div>
 

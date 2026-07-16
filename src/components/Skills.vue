@@ -1,32 +1,34 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ShieldCheck, Network, Code2, Cloud } from '@lucide/vue'
+import { t } from '../utils/i18n'
 
-const skillDomains = [
+const skillDomains = computed(() => [
   {
     id: 'security',
-    title: 'Ciberseguridad',
+    title: t('skills.security'),
     icon: ShieldCheck,
-    skills: ['Pentesting', 'OWASP Top 10', 'Red Teaming', 'Análisis Forense', 'OSINT', 'Malware Analysis', 'Auditoría']
+    skills: ['Pentesting', 'OWASP Top 10', 'Red Teaming', 'OSINT', 'Auditoría']
   },
   {
     id: 'networking',
-    title: 'Redes & Infraestructura',
+    title: t('skills.networking'),
     icon: Network,
     skills: ['CCNA R&S', 'Wireless Security', 'CyberOps', 'Industrial Cyber', 'Firewalls', 'SIEM']
   },
   {
     id: 'development',
-    title: 'Desarrollo',
+    title: t('skills.development'),
     icon: Code2,
     skills: ['Vue 3', 'TypeScript', 'React & Next', 'Node.js', 'Express', 'APIs', 'Python', 'Git']
   },
   {
     id: 'cloud',
-    title: 'Cloud & Unix',
+    title: t('skills.cloud'),
     icon: Cloud,
     skills: ['AWS Cloud', 'Linux Admin', 'Docker', 'PostgreSQL', 'SQL', 'CI/CD']
   }
-]
+])
 </script>
 
 <template>
@@ -34,8 +36,8 @@ const skillDomains = [
     <div class="max-w-6xl mx-auto px-6 relative z-10">
 
       <div class="mb-10 relative">
-        <span class="section-label">02. Stack Técnico</span>
-        <h2 class="text-3xl font-bold text-white mb-2">Habilidades <span class="text-gradient">Técnicas</span></h2>
+        <span class="section-label">{{ t('skills.label') }}</span>
+        <h2 class="text-3xl font-bold text-white mb-2">{{ t('skills.title1') }} <span class="text-gradient">{{ t('skills.title2') }}</span></h2>
       </div>
 
       <!-- Skills Grid (Compact) -->

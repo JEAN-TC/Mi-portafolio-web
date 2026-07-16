@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { Send, CheckCircle, AlertCircle, Loader2 } from '@lucide/vue'
+import { t } from '../utils/i18n'
 
 const API_URL = '/api/contact'
 
@@ -31,11 +32,11 @@ const handleSubmit = async () => {
       Object.assign(form, { name: '', email: '', message: '' })
     } else {
       status.value = 'error'
-      errorMsg.value = data.error || 'Error inesperado. Inténtalo de nuevo.'
+      errorMsg.value = data.error || t('contact.errorDef')
     }
   } catch {
     status.value = 'error'
-    errorMsg.value = 'No se pudo conectar con el servidor.'
+    errorMsg.value = t('contact.errorConn')
   } finally {
     isSubmitting.value = false
     setTimeout(() => status.value = 'idle', 7000)
@@ -48,37 +49,37 @@ const handleSubmit = async () => {
     <div class="ct-wrapper">
 
       <div class="ct-header">
-        <span class="section-label mx-auto justify-center">05. Hablemos</span>
-        <h2 class="ct-title">Ponte en <span class="text-gradient">Contacto</span></h2>
-        <p class="ct-subtitle">Conversemos sobre tu próximo proyecto o colaboración.</p>
+        <span class="section-label mx-auto justify-center">{{ t('contact.label') }}</span>
+        <h2 class="ct-title">{{ t('contact.title1') }} <span class="text-gradient">{{ t('contact.title2') }}</span></h2>
+        <p class="ct-subtitle">{{ t('contact.subtitle') }}</p>
       </div>
 
       <div class="ct-card card-modern">
         <form @submit.prevent="handleSubmit" class="ct-form" novalidate>
 
           <div class="ct-field">
-            <label for="ct-name" class="ct-label">Nombre</label>
+            <label for="ct-name" class="ct-label">{{ t('contact.nameLabel') }}</label>
             <input
               id="ct-name" type="text" v-model="form.name" required
-              class="ct-input" placeholder="Tu nombre completo"
+              class="ct-input" :placeholder="t('contact.namePh')"
               :disabled="isSubmitting"
             />
           </div>
 
           <div class="ct-field">
-            <label for="ct-email" class="ct-label">Email</label>
+            <label for="ct-email" class="ct-label">{{ t('contact.emailLabel') }}</label>
             <input
               id="ct-email" type="email" v-model="form.email" required
-              class="ct-input" placeholder="tu@email.com"
+              class="ct-input" :placeholder="t('contact.emailPh')"
               :disabled="isSubmitting"
             />
           </div>
 
           <div class="ct-field">
-            <label for="ct-message" class="ct-label">Mensaje</label>
+            <label for="ct-message" class="ct-label">{{ t('contact.msgLabel') }}</label>
             <textarea
               id="ct-message" v-model="form.message" rows="5" required
-              class="ct-input ct-textarea" placeholder="¿En qué te puedo ayudar?"
+              class="ct-input ct-textarea" :placeholder="t('contact.msgPh')"
               :disabled="isSubmitting"
             ></textarea>
           </div>
@@ -89,20 +90,20 @@ const handleSubmit = async () => {
           >
             <Loader2 v-if="isSubmitting" class="ct-btn-icon ct-spin" />
             <Send v-else class="ct-btn-icon" />
-            <span>{{ isSubmitting ? 'Enviando...' : 'Enviar Mensaje' }}</span>
+            <span>{{ isSubmitting ? t('contact.sending') : t('contact.send') }}</span>
           </button>
 
           <transition name="ct-fade">
             <div v-if="status === 'success'" class="ct-alert ct-alert--success">
               <CheckCircle class="ct-alert-icon" />
-              <span>¡Mensaje enviado! Te responderé lo antes posible.</span>
+              <span>{{ t('contact.success') }}</span>
             </div>
           </transition>
 
           <transition name="ct-fade">
             <div v-if="status === 'error'" class="ct-alert ct-alert--error">
               <AlertCircle class="ct-alert-icon" />
-              <span>{{ errorMsg || 'Error al enviar.' }} Escríbeme directo a
+              <span>{{ errorMsg || t('contact.errorSend') }} {{ t('contact.directMid') }}
                 <a href="mailto:jeantoscano5@gmail.com" class="ct-alert-link">jeantoscano5@gmail.com</a>
               </span>
             </div>
@@ -112,7 +113,7 @@ const handleSubmit = async () => {
       </div>
 
       <p class="ct-direct">
-        ¿Prefieres escribirme directo?
+        {{ t('contact.directStart') }}
         <a href="mailto:jeantoscano5@gmail.com" class="ct-direct-link">jeantoscano5@gmail.com</a>
       </p>
 

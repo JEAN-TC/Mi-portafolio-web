@@ -105,6 +105,10 @@ export class SpotifyAPI {
     this.accessToken = accessToken;
   }
 
+  updateToken(newToken: string) {
+    this.accessToken = newToken;
+  }
+
   private getHeaders() {
     return {
       'Authorization': `Bearer ${this.accessToken}`,

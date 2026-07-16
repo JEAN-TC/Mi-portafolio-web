@@ -30,8 +30,12 @@ const startMatrix = () => {
   if (!ctx) return
 
   const resize = () => {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = window.innerWidth * dpr
+    canvas.height = window.innerHeight * dpr
+    canvas.style.width = `${window.innerWidth}px`
+    canvas.style.height = `${window.innerHeight}px`
+    ctx.scale(dpr, dpr)
   }
   resize()
   window.addEventListener('resize', resize)
@@ -39,15 +43,15 @@ const startMatrix = () => {
   const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789'
   const alphabet = katakana.split('')
 
-  const fontSize = 16
-  let columns = canvas.width / fontSize
+  const fontSize = window.innerWidth < 768 ? 14 : 16
+  let columns = window.innerWidth / fontSize
   let rainDrops: number[] = Array.from({ length: columns }).map(() => 1)
 
   const draw = () => {
     const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#ff0000'
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
 
     ctx.fillStyle = accentColor
     ctx.font = fontSize + 'px monospace'
@@ -56,13 +60,17 @@ const startMatrix = () => {
       const text = alphabet[Math.floor(Math.random() * alphabet.length)]
       ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize)
 
-      if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      if (rainDrops[i] * fontSize > window.innerHeight && Math.random() > 0.975) {
         rainDrops[i] = 0
       }
       rainDrops[i]++
     }
-    animationId = requestAnimationFrame(draw)
+    setTimeout(() => {
+      if (animationId) animationId = requestAnimationFrame(draw)
+    }, 33) // ~30fps para rendimiento
   }
+
+  animationId = requestAnimationFrame(draw)
 
   draw()
 }

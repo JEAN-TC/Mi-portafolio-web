@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, nextTick } from 'vue'
 import { Terminal as TerminalIcon } from '@lucide/vue'
 import { useRouter } from 'vue-router'
 
@@ -48,10 +48,10 @@ const processCommand = () => {
     
     if (trimmed === 'adminJT') {
       isRoot.value = true
-      terminalOutput.value.push({ text: 'Autenticación exitosa. Ahora tienes privilegios de root.', isSuccess: true })
-      terminalOutput.value.push({ text: 'Escribe "help" para ver los comandos de control disponibles.', isSuccess: true })
+      terminalOutput.value.push({ text: 'Autenticación exitosa. Ahora tienes privilegios de root.', isCommand: false, isSuccess: true })
+      terminalOutput.value.push({ text: 'Escribe "help" para ver los comandos de control disponibles.', isCommand: false, isSuccess: true })
     } else {
-      terminalOutput.value.push({ text: 'su: Contraseña incorrecta. Intento fallido.', isError: true })
+      terminalOutput.value.push({ text: 'su: Contraseña incorrecta. Intento fallido.', isCommand: false, isError: true })
     }
     isPromptingPassword.value = false
     scrollToBottom()
@@ -66,7 +66,7 @@ const processCommand = () => {
   const parts = trimmed.split(/\s+/)
   const cmd = parts[0].toLowerCase()
   const arg1 = parts[1] ? parts[1].toLowerCase() : ''
-  const arg2 = parts[2] ? parts[2].toLowerCase() : ''
+
 
   // Manejo de comandos
   switch (cmd) {
@@ -99,7 +99,7 @@ const processCommand = () => {
 
     case 'whoami':
       if (isRoot.value) {
-        terminalOutput.value.push({ text: 'root - Superusuario con control total sobre la web.', isWarning: true })
+        terminalOutput.value.push({ text: 'root - Superusuario con control total sobre la web.', isCommand: false, isWarning: true })
       } else {
         terminalOutput.value.push({ text: 'jean - Auditor Web & Desarrollador Full-Stack SecDevOps', isCommand: false })
       }
@@ -107,16 +107,16 @@ const processCommand = () => {
 
     case 'ls':
       const fileList = Object.keys(virtualFiles.value).join('   ')
-      terminalOutput.value.push({ text: fileList, isSuccess: true })
+      terminalOutput.value.push({ text: fileList, isCommand: false, isSuccess: true })
       break
 
     case 'cat':
       if (!arg1) {
-        terminalOutput.value.push({ text: 'cat: Falta especificar el nombre del archivo.', isError: true })
+        terminalOutput.value.push({ text: 'cat: Falta especificar el nombre del archivo.', isCommand: false, isError: true })
       } else if (virtualFiles.value[arg1] !== undefined) {
         terminalOutput.value.push({ text: virtualFiles.value[arg1], isCommand: false })
       } else {
-        terminalOutput.value.push({ text: `cat: ${arg1}: No existe el archivo o directorio`, isError: true })
+        terminalOutput.value.push({ text: `cat: ${arg1}: No existe el archivo o directorio`, isCommand: false, isError: true })
       }
       break
 
@@ -134,16 +134,16 @@ const processCommand = () => {
     case 'su':
       if (trimmed === 'sudo su' || trimmed === 'su' || trimmed === 'su root') {
         isPromptingPassword.value = true
-        terminalOutput.value.push({ text: 'Contraseña para jean: ', isWarning: true })
+        terminalOutput.value.push({ text: 'Contraseña para jean: ', isCommand: false, isWarning: true })
       } else {
-        terminalOutput.value.push({ text: 'Comando no reconocido. Para ser root escribe "sudo su".', isError: true })
+        terminalOutput.value.push({ text: 'Comando no reconocido. Para ser root escribe "sudo su".', isCommand: false, isError: true })
       }
       break
 
     case 'exit':
       if (isRoot.value) {
         isRoot.value = false
-        terminalOutput.value.push({ text: 'Sesión root cerrada. Volviendo a jean.', isWarning: true })
+        terminalOutput.value.push({ text: 'Sesión root cerrada. Volviendo a jean.', isCommand: false, isWarning: true })
       } else {
         terminalOutput.value.push({ text: 'Ya estás en la sesión del usuario jean.', isCommand: false })
       }
@@ -152,7 +152,7 @@ const processCommand = () => {
     // ── COMANDOS DE SUPERUSUARIO ──
     case 'theme':
       if (!isRoot.value) {
-        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "theme".', isError: true })
+        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "theme".', isCommand: false, isError: true })
         break
       }
       const themeColors: Record<string, [string, string]> = {
@@ -165,68 +165,68 @@ const processCommand = () => {
       if (themeColors[arg1]) {
         document.documentElement.style.setProperty('--accent-color', themeColors[arg1][0])
         document.documentElement.style.setProperty('--accent-alt', themeColors[arg1][1])
-        terminalOutput.value.push({ text: `[+] Acentos de la página actualizados a [${arg1.toUpperCase()}]`, isSuccess: true })
+        terminalOutput.value.push({ text: `[+] Acentos de la página actualizados a [${arg1.toUpperCase()}]`, isCommand: false, isSuccess: true })
       } else {
-        terminalOutput.value.push({ text: 'Error: Tema desconocido. Usa: red, blue, green, purple, cyber', isError: true })
+        terminalOutput.value.push({ text: 'Error: Tema desconocido. Usa: red, blue, green, purple, cyber', isCommand: false, isError: true })
       }
       break
 
     case 'matrix':
       if (!isRoot.value) {
-        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "matrix".', isError: true })
+        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "matrix".', isCommand: false, isError: true })
         break
       }
       if (arg1 === 'start') {
         window.dispatchEvent(new CustomEvent('terminal-matrix', { detail: 'start' }))
-        terminalOutput.value.push({ text: '[+] Iniciando lluvia de código Matrix...', isSuccess: true })
+        terminalOutput.value.push({ text: '[+] Iniciando lluvia de código Matrix...', isCommand: false, isSuccess: true })
       } else if (arg1 === 'stop') {
         window.dispatchEvent(new CustomEvent('terminal-matrix', { detail: 'stop' }))
-        terminalOutput.value.push({ text: '[-] Deteniendo lluvia de código Matrix.', isWarning: true })
+        terminalOutput.value.push({ text: '[-] Deteniendo lluvia de código Matrix.', isCommand: false, isWarning: true })
       } else {
         window.dispatchEvent(new CustomEvent('terminal-matrix'))
-        terminalOutput.value.push({ text: '[*] Conmutando protector de pantalla Matrix...', isSuccess: true })
+        terminalOutput.value.push({ text: '[*] Conmutando protector de pantalla Matrix...', isCommand: false, isSuccess: true })
       }
       break
 
     case 'music':
       if (!isRoot.value) {
-        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "music".', isError: true })
+        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "music".', isCommand: false, isError: true })
         break
       }
       if (arg1 === 'play' || arg1 === 'pause' || arg1 === 'skip') {
         // Enviar evento al reproductor de música global
         window.dispatchEvent(new CustomEvent('terminal-music', { detail: arg1 }))
-        terminalOutput.value.push({ text: `[+] Enviada señal: Music player [${arg1.toUpperCase()}]`, isSuccess: true })
+        terminalOutput.value.push({ text: `[+] Enviada señal: Music player [${arg1.toUpperCase()}]`, isCommand: false, isSuccess: true })
       } else {
-        terminalOutput.value.push({ text: 'Uso correcto: music play | music pause | music skip', isError: true })
+        terminalOutput.value.push({ text: 'Uso correcto: music play | music pause | music skip', isCommand: false, isError: true })
       }
       break
 
     case 'hack':
       if (!isRoot.value) {
-        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "hack".', isError: true })
+        terminalOutput.value.push({ text: 'su: Permiso denegado. Se requiere ser root para usar "hack".', isCommand: false, isError: true })
         break
       }
       terminalOutput.value.push(
-        { text: '[i] Iniciando protocolo de intrusión simulado...', isWarning: true },
+        { text: '[i] Iniciando protocolo de intrusión simulado...', isCommand: false, isWarning: true },
         { text: '  - Buscando vulnerabilidades... [OK]', isCommand: false },
         { text: '  - Explotando buffer overflow en puerto local... [OK]', isCommand: false },
         { text: '  - Escalando privilegios locales... [COMPLETADO]', isCommand: false },
-        { text: '  ==============================================', isSuccess: true },
-        { text: '  ||            ACCESO CONCEDIDO              ||', isSuccess: true },
-        { text: '  ==============================================', isSuccess: true }
+        { text: '  ==============================================', isCommand: false, isSuccess: true },
+        { text: '  ||            ACCESO CONCEDIDO              ||', isCommand: false, isSuccess: true },
+        { text: '  ==============================================', isCommand: false, isSuccess: true }
       )
       break
 
     case 'cd':
     case 'goto':
       if (!isRoot.value) {
-        terminalOutput.value.push({ text: `su: Permiso denegado. Se requiere ser root para usar "${cmd}".`, isError: true })
+        terminalOutput.value.push({ text: `su: Permiso denegado. Se requiere ser root para usar "${cmd}".`, isCommand: false, isError: true })
         break
       }
       const target = arg1
       if (!target) {
-        terminalOutput.value.push({ text: `Error: Debes especificar un destino. Ej: ${cmd} perfil`, isError: true })
+        terminalOutput.value.push({ text: `Error: Debes especificar un destino. Ej: ${cmd} perfil`, isCommand: false, isError: true })
         break
       }
       const routesMap: Record<string, string> = {
@@ -241,16 +241,16 @@ const processCommand = () => {
         'terminal': '/terminal'
       }
       if (routesMap[target]) {
-        terminalOutput.value.push({ text: `[+] Redirigiendo a [${target}]...`, isSuccess: true })
+        terminalOutput.value.push({ text: `[+] Redirigiendo a [${target}]...`, isCommand: false, isSuccess: true })
         router.push(routesMap[target])
       } else {
-        terminalOutput.value.push({ text: `Error: Destino [${target}] no reconocido.`, isError: true })
+        terminalOutput.value.push({ text: `Error: Destino [${target}] no reconocido.`, isCommand: false, isError: true })
         terminalOutput.value.push({ text: 'Destinos válidos: inicio, perfil, habilidades, certificaciones, proyectos, contacto, apuntes, terminal', isCommand: false })
       }
       break
 
     default:
-      terminalOutput.value.push({ text: `bash: ${cmd}: orden no encontrada`, isError: true })
+      terminalOutput.value.push({ text: `bash: ${cmd}: orden no encontrada`, isCommand: false, isError: true })
   }
 
   scrollToBottom()

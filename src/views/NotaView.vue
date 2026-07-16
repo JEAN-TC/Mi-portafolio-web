@@ -42,7 +42,7 @@ onMounted(async () => {
     const text = await response.text()
     
     // Pre-procesar texto para soportar el formato de imágenes de Obsidian: ![[imagen.png]] o ![[imagen.png|600]]
-    const processedText = text.replace(/!\[\[([^|\]]+)(?:\|[^\]]+)?\]\]/g, (match, filename) => {
+    const processedText = text.replace(/!\[\[([^|\]]+)(?:\|[^\]]+)?\]\]/g, (_match, filename) => {
       // Los archivos con espacios (como "Captura de pantalla") rompen el parser de Markdown si no se codifican
       const safeUrl = encodeURI(filename.trim())
       return `![imagen_obsidian](/apuntes/${safeUrl})`

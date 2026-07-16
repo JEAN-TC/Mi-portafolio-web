@@ -1,36 +1,41 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ShieldAlert, Code2, CloudCog } from '@lucide/vue'
+import { t } from '../utils/i18n'
 
-const services = [
-  {
-    icon: ShieldAlert,
-    title: 'Auditoría Web & Pentesting',
-    description: 'Análisis de vulnerabilidades, pruebas de penetración y reporte de fallos de seguridad en aplicaciones web utilizando OWASP Top 10 y herramientas especializadas.',
-  },
-  {
-    icon: Code2,
-    title: 'Desarrollo SecDevOps',
-    description: 'Construcción de aplicaciones full-stack robustas integrando prácticas de seguridad desde el código fuente, previniendo inyecciones SQL, XSS y CSRF por defecto.',
-  },
-  {
-    icon: CloudCog,
-    title: 'Arquitectura Segura',
-    description: 'Diseño e implementación de infraestructuras en la nube (AWS) y redes locales con configuraciones de firewalls, segmentación y control de accesos estrictos.',
-  }
-]
+const services = computed(() => {
+  const list = t('services.list')
+  return [
+    {
+      icon: ShieldAlert,
+      title: list[0].title,
+      description: list[0].desc,
+    },
+    {
+      icon: Code2,
+      title: list[1].title,
+      description: list[1].desc,
+    },
+    {
+      icon: CloudCog,
+      title: list[2].title,
+      description: list[2].desc,
+    }
+  ]
+})
 </script>
 
 <template>
-  <section id="servicios" class="py-24 bg-[#09090b] relative border-t border-[#27272a]/50">
+  <section id="servicios" class="py-24 bg-[#09090b] relative">
     <!-- Decoración de fondo -->
     <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,0,0,0.03),_transparent_70%)] pointer-events-none"></div>
 
     <div class="max-w-6xl mx-auto px-6 relative z-10">
       <div class="mb-16 text-center">
-        <span class="section-label mx-auto mb-4">Lo que hago</span>
-        <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Áreas de <span class="text-gradient">Especialización</span></h2>
+        <span class="section-label mx-auto mb-4">{{ t('services.label') }}</span>
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">{{ t('services.title1') }} <span class="text-gradient">{{ t('services.title2') }}</span></h2>
         <p class="text-[#a1a1aa] max-w-2xl mx-auto text-lg">
-          Combino la mentalidad ofensiva de un hacker con la capacidad constructiva de un desarrollador para crear soluciones inquebrantables.
+          {{ t('services.subtitle') }}
         </p>
       </div>
 

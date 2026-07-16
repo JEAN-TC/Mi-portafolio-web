@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { ArrowUp, MapPin, Phone, Mail, FileDown, ExternalLink } from '@lucide/vue'
+import { computed } from 'vue'
+import { t } from '../utils/i18n'
+
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 const currentYear = new Date().getFullYear()
 
-const navLinks = [
-  { name: 'Inicio',          href: '/#inicio'          },
-  { name: 'Perfil',          href: '/#sobre-mi'        },
-  { name: 'Habilidades',     href: '/#habilidades'     },
-  { name: 'Certificaciones', href: '/#certificaciones' },
-  { name: 'Proyectos',       href: '/#proyectos'       },
-  { name: 'Apuntes',         href: '/apuntes'          },
-  { name: 'Terminal',        href: '/terminal'         },
-]
+const navLinks = computed(() => [
+  { name: t('nav.home'),          href: '/#inicio'          },
+  { name: t('nav.profile'),       href: '/#sobre-mi'        },
+  { name: t('nav.skills'),        href: '/#habilidades'     },
+  { name: t('nav.certs'),         href: '/#certificaciones' },
+  { name: t('nav.projects'),      href: '/#proyectos'       },
+  { name: t('nav.notes'),         href: '/apuntes'          },
+  { name: t('nav.terminal'),      href: '/terminal'         },
+])
 </script>
 
 <template>
@@ -30,14 +33,13 @@ const navLinks = [
           <span class="ft-logo-tag">TC</span>
         </div>
         <p class="ft-bio">
-          Security Engineer &amp; Full Stack Developer apasionado por la ciberseguridad,
-          el desarrollo web y el aprendizaje continuo.
+          {{ t('footer.bio') }}
         </p>
       </div>
 
       <!-- ── Col 2: Quick Nav ── -->
       <div class="ft-col">
-        <h4 class="ft-col-title">Navegación</h4>
+        <h4 class="ft-col-title">{{ t('footer.navigation') }}</h4>
         <nav class="ft-nav">
           <router-link
             v-for="link in navLinks"
@@ -54,31 +56,31 @@ const navLinks = [
 
       <!-- ── Col 3: Contact Info ── -->
       <div class="ft-col">
-        <h4 class="ft-col-title">Contacto</h4>
+        <h4 class="ft-col-title">{{ t('footer.contact') }}</h4>
         <ul class="ft-info-list">
           <li class="ft-info-item">
             <MapPin class="ft-info-icon" />
-            <span>Trujillo, La Libertad — Perú</span>
+            <span>Ventanilla</span>
           </li>
           <li class="ft-info-item">
             <Phone class="ft-info-icon" />
-            <a href="tel:+51999999999" class="ft-info-link">+51 999 999 999</a>
+            <a href="tel:+51989697285" class="ft-info-link">+51 989697285</a>
           </li>
           <li class="ft-info-item">
             <Mail class="ft-info-icon" />
-            <a href="mailto:jean@example.com" class="ft-info-link">jean@example.com</a>
+            <a href="mailto:jeantoscano5@gmail.com" class="ft-info-link">jeantoscano5@gmail.com</a>
           </li>
         </ul>
         <!-- CV Download -->
-        <a href="/cv-jean-piero-toscano.pdf" download class="ft-cv-btn">
+        <a href="/CV_Jean_Toscano.pdf" target="_blank" class="ft-cv-btn">
           <FileDown class="ft-cv-icon" />
-          <span>Descargar CV</span>
+          <span>{{ t('footer.downloadCv') }}</span>
         </a>
       </div>
 
       <!-- ── Col 4: Socials ── -->
       <div class="ft-col">
-        <h4 class="ft-col-title">Redes</h4>
+        <h4 class="ft-col-title">{{ t('footer.socials') }}</h4>
         <div class="ft-socials">
           <a
             href="https://github.com/jean-tc"
@@ -96,7 +98,7 @@ const navLinks = [
           </a>
 
           <a
-            href="https://linkedin.com/in/jean-toscano"
+            href="https://www.linkedin.com/in/jean-toscano-875894372/"
             target="_blank" rel="noopener noreferrer"
             class="ft-social-card" title="LinkedIn"
           >
@@ -134,11 +136,11 @@ const navLinks = [
     <div class="ft-bottom-wrap">
       <div class="ft-bottom">
         <p class="ft-copyright">
-          © {{ currentYear }} Jean Piero Toscano Cárdenas. Todos los derechos reservados.
+          © {{ currentYear }} Jean Piero Toscano Cárdenas. {{ t('footer.rights') }}
         </p>
         <button @click="scrollToTop" class="ft-top-btn" aria-label="Volver arriba">
           <ArrowUp class="w-4 h-4" />
-          <span>Volver arriba</span>
+          <span>{{ t('footer.backToTop') }}</span>
         </button>
       </div>
     </div>

@@ -16,14 +16,16 @@ let animationFrameId: number
 
 const initParticles = (width: number, height: number) => {
   particles = []
-  const count = Math.floor((width * height) / 15000) // Densidad de partículas
+  // Reduce particle density slightly for better mobile performance
+  const density = window.innerWidth < 768 ? 25000 : 20000 
+  const count = Math.floor((width * height) / density) 
   for (let i = 0; i < count; i++) {
     particles.push({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: (Math.random() - 0.5) * 0.5,
-      size: Math.random() * 2 + 0.5
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      size: Math.random() * 1.5 + 0.5
     })
   }
 }
@@ -33,8 +35,8 @@ const draw = () => {
   const ctx = canvas.value.getContext('2d')
   if (!ctx) return
   
-  const width = canvas.value.width
-  const height = canvas.value.height
+  const width = window.innerWidth
+  const height = window.innerHeight
   
   ctx.clearRect(0, 0, width, height)
   
@@ -74,11 +76,17 @@ const draw = () => {
 }
 
 const resizeCanvas = () => {
-  if (canvas.value) {
-    canvas.value.width = window.innerWidth
-    canvas.value.height = window.innerHeight
-    initParticles(canvas.value.width, canvas.value.height)
-  }
+  if (!canvas.value) return
+  const dpr = window.devicePixelRatio || 1
+  canvas.value.width = window.innerWidth * dpr
+  canvas.value.height = window.innerHeight * dpr
+  canvas.value.style.width = `${window.innerWidth}px`
+  canvas.value.style.height = `${window.innerHeight}px`
+  
+  const ctx = canvas.value.getContext('2d')
+  if (ctx) ctx.scale(dpr, dpr)
+  
+  initParticles(window.innerWidth, window.innerHeight)
 }
 
 onMounted(() => {

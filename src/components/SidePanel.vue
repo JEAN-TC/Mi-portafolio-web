@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { ChevronRight, Globe, ExternalLink } from '@lucide/vue'
+import { ChevronRight, ExternalLink, Download, Copy, Check, Settings } from '@lucide/vue'
+import { i18nState, t } from '../utils/i18n'
+import MusicPlayer from './MusicPlayer.vue'
 
 // ─── PANEL ───────────────────────────────────────────
 const isOpen = ref(false)
@@ -11,13 +13,24 @@ watch(isOpen, (val) => {
 })
 
 // ─── LANGUAGE ────────────────────────────────────────
-const lang = ref<'es' | 'en'>(
-  (localStorage.getItem('site_lang') as 'es' | 'en') || 'es'
-)
 function toggleLang() {
-  lang.value = lang.value === 'es' ? 'en' : 'es'
-  localStorage.setItem('site_lang', lang.value)
-  window.dispatchEvent(new CustomEvent('lang-change', { detail: lang.value }))
+  i18nState.setLang(i18nState.lang === 'es' ? 'en' : 'es')
+}
+
+// ─── ACTIONS ─────────────────────────────────────────
+const emailCopied = ref(false)
+function copyEmail() {
+  navigator.clipboard.writeText('jeantoscano5@gmail.com')
+  emailCopied.value = true
+  setTimeout(() => emailCopied.value = false, 2000)
+}
+
+function downloadCv() {
+  const link = document.createElement('a')
+  link.href = '/CV_Jean_Toscano.pdf'
+  link.download = 'CV_Jean_Toscano.pdf'
+  link.target = '_blank'
+  link.click()
 }
 </script>
 
@@ -33,46 +46,59 @@ function toggleLang() {
 
       <!-- Header -->
       <div class="drawer-header">
-        <span class="drawer-title">Panel</span>
+        <span class="drawer-title">{{ t('sidePanel.title') }}</span>
         <button class="drawer-close" @click="toggle">✕</button>
       </div>
 
 
-      <!-- ── IDIOMA ─────────────────────────────── -->
+
+      <!-- ── ACCIONES RÁPIDAS ────────────────────── -->
       <section class="panel-section">
         <div class="section-label">
-          <Globe class="section-icon" /> Idioma
+          <TerminalSquare class="section-icon" /> {{ t('sidePanel.quickAccess') }}
         </div>
-        <div class="lang-toggle">
+        <div class="links-list">
+          <button @click="downloadCv" class="social-link" style="width: 100%; text-align: left; cursor: pointer;">
+            <Download class="social-icon" />
+            <span class="social-label">pdf/</span> {{ t('sidePanel.downloadCv') }}
+          </button>
+          <button @click="copyEmail" class="social-link" style="width: 100%; text-align: left; cursor: pointer;">
+            <component :is="emailCopied ? Check : Copy" class="social-icon" />
+            <span class="social-label">mail/</span> {{ emailCopied ? t('sidePanel.emailCopied') : t('sidePanel.copyEmail') }}
+          </button>
+        </div>
+      </section>
+
+      <!-- ── PREFERENCIAS ────────────────────────── -->
+      <section class="panel-section">
+        <div class="section-label">
+          <Settings class="section-icon" /> Preferencias
+        </div>
+        <div class="lang-toggle mb-2" style="margin-bottom: 0.5rem;">
           <button
             class="lang-btn"
-            :class="{ active: lang === 'es' }"
-            @click="lang !== 'es' && toggleLang()"
+            :class="{ active: i18nState.lang === 'es' }"
+            @click="i18nState.lang !== 'es' && toggleLang()"
           >ES</button>
           <button
             class="lang-btn"
-            :class="{ active: lang === 'en' }"
-            @click="lang !== 'en' && toggleLang()"
+            :class="{ active: i18nState.lang === 'en' }"
+            @click="i18nState.lang !== 'en' && toggleLang()"
           >EN</button>
         </div>
-        <p class="lang-note">
-          {{ lang === 'es'
-            ? 'Cambiar a inglés próximamente.'
-            : 'Full English support coming soon.' }}
-        </p>
       </section>
 
       <!-- ── ENCUÉNTRAME ────────────────────────── -->
       <section class="panel-section">
         <div class="section-label">
-          <ExternalLink class="section-icon" /> Encuéntrame
+          <ExternalLink class="section-icon" /> {{ t('sidePanel.findMe') }}
         </div>
         <div class="links-list">
-          <a href="https://github.com/jean-tc" target="_blank" class="social-link">
+          <a href="https://github.com/JEAN-TC" target="_blank" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">gh/</span> GitHub
           </a>
-          <a href="https://linkedin.com/in/jean-toscano" target="_blank" class="social-link">
+          <a href="https://www.linkedin.com/in/jean-toscano-875894372/" target="_blank" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">in/</span> LinkedIn
           </a>
@@ -83,12 +109,9 @@ function toggleLang() {
         </div>
       </section>
 
-      <!-- ── FRASE ──────────────────────────────── -->
-      <section class="panel-section fun-fact">
-        <p class="fact-text">
-          "El que deja de aprender<br/>deja de ser peligroso."
-        </p>
-        <span class="fact-attr">— Jean Piero</span>
+      <!-- ── MUSIC PLAYER ─────────────────────────── -->
+      <section class="panel-section" style="margin-bottom: 2rem;">
+        <MusicPlayer />
       </section>
 
     </aside>
@@ -284,4 +307,16 @@ function toggleLang() {
 /* ─── TRANSITIONS ─────────────────────────────────────── */
 .drawer-enter-active, .drawer-leave-active { transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
 .drawer-enter-from, .drawer-leave-to { transform: translateX(100%); }
+
+/* ─── SYS STATUS ──────────────────────────────────────── */
+.sys-status { display: flex; flex-direction: column; gap: 0.5rem; }
+.status-item {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  color: #ccc;
+  background: rgba(0,255,0,0.05); padding: 0.4rem 0.6rem;
+  border-radius: 6px; border: 1px solid rgba(0,255,0,0.1);
+}
+.status-icon { width: 14px; height: 14px; }
+.text-green { color: #00ff00; }
 </style>

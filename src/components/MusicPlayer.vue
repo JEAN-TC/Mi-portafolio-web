@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-import {
-  Play, Pause, SkipForward, SkipBack, Volume2, VolumeX,
-  Music, Search, LogOut, RefreshCw, Repeat, Shuffle,
-  ChevronDown, Headset
-} from '@lucide/vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { Search, LogOut, RefreshCw, Play, Pause, SkipForward, SkipBack } from '@lucide/vue'
 import { redirectToSpotifyAuth, getSpotifyToken, refreshSpotifyToken, SpotifyAPI } from '../utils/spotify'
 
 // ==========================================
 // 1. ESTADO GLOBAL & TABS
 // ==========================================
-const isOpen = ref(false)
 const activeTab = ref<'local' | 'spotify'>('local') // 'local' o 'spotify'
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || ''
 const clientID = ref(localStorage.getItem('spotify_client_id') || SPOTIFY_CLIENT_ID)
@@ -24,148 +19,6 @@ const showToast = (msg: string, type: 'success' | 'error' | 'info' = 'info') => 
   setTimeout(() => {
     toastMessage.value = ''
   }, 5000)
-}
-
-// ==========================================
-// 2. MODULO PLAYER LOCAL (HTML5 AUDIO)
-// ==========================================
-const audio = ref<HTMLAudioElement | null>(null)
-const isPlaying = ref(false)
-const currentTime = ref(0)
-const duration = ref(0)
-const volume = ref(Number(localStorage.getItem('player_volume')) || 0.5)
-const isMuted = ref(false)
-const currentTrackIndex = ref(0)
-const isLoop = ref(false)
-const isShuffle = ref(false)
-
-// Playlist de prueba local (Synthwave / Lo-Fi relajante)
-const localPlaylist = [
-  {
-    title: "Dreamy Night",
-    artist: "Lofi Dreamer",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    cover: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300&auto=format&fit=crop&q=80"
-  },
-  {
-    title: "Cyberpunk Sunrise",
-    artist: "Retro Kid",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&auto=format&fit=crop&q=80"
-  },
-  {
-    title: "Vaporwave Horizon",
-    artist: "Tokyo Synth",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-    cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=80"
-  }
-]
-
-const currentTrack = computed(() => localPlaylist[currentTrackIndex.value])
-
-// Inicializar audio
-const initAudio = () => {
-  if (audio.value) {
-    audio.value.pause()
-  }
-  audio.value = new Audio(currentTrack.value.url)
-  audio.value.volume = isMuted.value ? 0 : volume.value
-
-  audio.value.addEventListener('timeupdate', () => {
-    if (audio.value) currentTime.value = audio.value.currentTime
-  })
-
-  audio.value.addEventListener('loadedmetadata', () => {
-    if (audio.value) duration.value = audio.value.duration
-  })
-
-  audio.value.addEventListener('ended', () => {
-    if (isLoop.value) {
-      playLocal()
-    } else {
-      nextTrack()
-    }
-  })
-}
-
-// Controles Local
-const playLocal = () => {
-  if (!audio.value) initAudio()
-  audio.value?.play()
-    .then(() => {
-      isPlaying.value = true
-    })
-    .catch((err) => {
-      console.error("Error playing audio", err)
-      showToast("Error al reproducir el archivo de audio local.", "error")
-    })
-}
-
-const pauseLocal = () => {
-  audio.value?.pause()
-  isPlaying.value = false
-}
-
-const togglePlayLocal = () => {
-  if (isPlaying.value) {
-    pauseLocal()
-  } else {
-    playLocal()
-  }
-}
-
-const nextTrack = () => {
-  if (isShuffle.value) {
-    currentTrackIndex.value = Math.floor(Math.random() * localPlaylist.length)
-  } else {
-    currentTrackIndex.value = (currentTrackIndex.value + 1) % localPlaylist.length
-  }
-  initAudio()
-  if (isPlaying.value) {
-    playLocal()
-  }
-}
-
-const prevTrack = () => {
-  currentTrackIndex.value = (currentTrackIndex.value - 1 + localPlaylist.length) % localPlaylist.length
-  initAudio()
-  if (isPlaying.value) {
-    playLocal()
-  }
-}
-
-const seek = (e: Event) => {
-  const target = e.target as HTMLInputElement
-  const value = parseFloat(target.value)
-  if (audio.value) {
-    audio.value.currentTime = value
-    currentTime.value = value
-  }
-}
-
-const changeVolume = (e: Event) => {
-  const target = e.target as HTMLInputElement
-  const value = parseFloat(target.value)
-  volume.value = value
-  localStorage.setItem('player_volume', value.toString())
-  if (audio.value) {
-    audio.value.volume = isMuted.value ? 0 : value
-  }
-}
-
-const toggleMute = () => {
-  isMuted.value = !isMuted.value
-  if (audio.value) {
-    audio.value.volume = isMuted.value ? 0 : volume.value
-  }
-}
-
-const toggleLoop = () => {
-  isLoop.value = !isLoop.value
-}
-
-const toggleShuffle = () => {
-  isShuffle.value = !isShuffle.value
 }
 
 // Formatear Segundos
@@ -265,7 +118,6 @@ const initSpotify = async () => {
       clientID.value = savedClientID
       isSpotifyConnected.value = true
       activeTab.value = 'spotify'
-      isOpen.value = true
       
       showToast("Conectado con éxito a Spotify!", "success")
       await setupSpotifyClient(tokens.access_token)
@@ -279,30 +131,40 @@ const initSpotify = async () => {
   // Si ya tenemos token guardado
   const accessToken = localStorage.getItem('spotify_access_token')
   const refreshToken = localStorage.getItem('spotify_refresh_token')
+
+  if (accessToken && refreshToken) {
+    await ensureTokenFreshness()
+    isSpotifyConnected.value = true
+    await setupSpotifyClient(localStorage.getItem('spotify_access_token') || accessToken)
+  }
+}
+
+// Función para asegurar que el token esté vivo
+const ensureTokenFreshness = async () => {
   const expiresAt = Number(localStorage.getItem('spotify_token_expires') || '0')
+  const refreshToken = localStorage.getItem('spotify_refresh_token')
+  const now = new Date().getTime()
 
-  if (accessToken && refreshToken && savedClientID) {
-    const now = new Date().getTime()
-    if (now > expiresAt - 60000) { // Si expira en menos de 1 min, refrescar
-      try {
-        const tokens = await refreshSpotifyToken(savedClientID, refreshToken)
-        const newExpiresAt = new Date().getTime() + tokens.expires_in * 1000
+  if (refreshToken && now > expiresAt - 60000) {
+    try {
+      const currentClientID = clientID.value || localStorage.getItem('spotify_client_id') || SPOTIFY_CLIENT_ID
+      const tokens = await refreshSpotifyToken(currentClientID, refreshToken)
+      const newExpiresAt = new Date().getTime() + tokens.expires_in * 1000
 
-        localStorage.setItem('spotify_access_token', tokens.access_token)
-        if (tokens.refresh_token) {
-          localStorage.setItem('spotify_refresh_token', tokens.refresh_token)
-        }
-        localStorage.setItem('spotify_token_expires', newExpiresAt.toString())
-        
-        isSpotifyConnected.value = true
-        await setupSpotifyClient(tokens.access_token)
-      } catch (err) {
-        console.error("Error al refrescar token", err)
+      localStorage.setItem('spotify_access_token', tokens.access_token)
+      if (tokens.refresh_token) {
+        localStorage.setItem('spotify_refresh_token', tokens.refresh_token)
+      }
+      localStorage.setItem('spotify_token_expires', newExpiresAt.toString())
+      
+      if (spotifyClientInstance) {
+        spotifyClientInstance.updateToken(tokens.access_token)
+      }
+    } catch (err: any) {
+      console.error("Error al refrescar token", err)
+      if (err.message && (err.message.includes("invalid_grant") || err.message.includes("400"))) {
         disconnectSpotify()
       }
-    } else {
-      isSpotifyConnected.value = true
-      await setupSpotifyClient(accessToken)
     }
   }
 }
@@ -318,13 +180,13 @@ const setupSpotifyClient = async (token: string) => {
     spotifyPollingInterval = setInterval(pollSpotifyStatus, 5000)
   } catch (error) {
     console.error("Error de cliente", error)
-    disconnectSpotify()
   }
 }
 
 // Actualizar canción activa en Spotify
 const pollSpotifyStatus = async () => {
   if (!spotifyClientInstance) return
+  await ensureTokenFreshness()
   try {
     const current = await spotifyClientInstance.getCurrentlyPlaying()
     if (current) {
@@ -364,11 +226,8 @@ const handleSearch = async () => {
   }
 }
 
-// Intentar reproducir tema en Spotify o recurrir al preview local
+// Intentar reproducir tema en Spotify
 const playSpotifyTrack = async (track: any) => {
-  // Pausar reproductor local si está sonando
-  pauseLocal()
-
   if (!spotifyClientInstance) return
 
   try {
@@ -379,27 +238,8 @@ const playSpotifyTrack = async (track: any) => {
     isPlayingSpotifyTrack.value = true
     setTimeout(pollSpotifyStatus, 1000)
   } catch (err: any) {
-    console.warn("Spotify Connect Fallback", err)
-    
-    // Fallback: Si no hay dispositivo o no es Premium, usar el Preview URL en el reproductor local
-    if (track.preview_url) {
-      showToast(`No se detectó dispositivo activo. Reproduciendo avance de 30s localmente.`, "info")
-      
-      // Simular pista local con los detalles de Spotify
-      localPlaylist.push({
-        title: track.name,
-        artist: track.artists.map((a: any) => a.name).join(', '),
-        url: track.preview_url,
-        cover: track.album.images[0]?.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300'
-      })
-      
-      currentTrackIndex.value = localPlaylist.length - 1
-      activeTab.value = 'local'
-      initAudio()
-      playLocal()
-    } else {
-      showToast("No se pudo reproducir. " + err.message, "error")
-    }
+    console.warn("Spotify Connect", err)
+    showToast("No se pudo reproducir en Spotify. Abre la app en algún dispositivo.", "error")
   }
 }
 
@@ -442,40 +282,22 @@ const prevSpotify = async () => {
   }
 }
 
-// Detener reproductor local al cambiar a Spotify
-watch(activeTab, (newTab) => {
-  if (newTab === 'spotify' && isPlaying.value) {
-    pauseLocal()
-  }
-})
-
 // Manejar eventos desde la terminal
-const handleTerminalMusic = (e: Event) => {
-  const action = (e as CustomEvent).detail
-  if (action === 'play') {
-    playLocal()
-  } else if (action === 'pause') {
-    pauseLocal()
-  } else if (action === 'skip') {
-    nextTrack()
-  }
+const handleTerminalMusic = (_e: Event) => {
+  // Ignorado temporalmente - funciones locales eliminadas
 }
 
 // ==========================================
 // LÍCLO DE VIDA Y MONTAJE
 // ==========================================
 onMounted(() => {
-  initAudio()
   initSpotify()
-  window.addEventListener('open-music-player', () => { isOpen.value = true })
   window.addEventListener('terminal-music', handleTerminalMusic)
 })
 
 onUnmounted(() => {
-  if (audio.value) audio.value.pause()
   if (spotifyPollingInterval) clearInterval(spotifyPollingInterval)
   if (progressTickerInterval) clearInterval(progressTickerInterval)
-  window.removeEventListener('open-music-player', () => { isOpen.value = true })
   window.removeEventListener('terminal-music', handleTerminalMusic)
 })
 
@@ -491,22 +313,8 @@ onUnmounted(() => {
       </div>
     </Transition>
 
-    <!-- FLOATING BUTTON -->
-    <button class="mp-fab" :class="{ playing: isPlayingSpotifyTrack }" @click="isOpen = !isOpen" aria-label="Música">
-      <div class="mp-fab-cover" v-if="spotifyPlaying?.album?.images?.[0]?.url">
-        <img :src="spotifyPlaying.album.images[0].url" alt="cover" />
-      </div>
-      <div class="mp-fab-icon">
-        <Headset v-if="!isPlayingSpotifyTrack" class="mp-fab-svg" />
-        <div v-else class="mp-fab-bars">
-          <span v-for="i in 4" :key="i"></span>
-        </div>
-      </div>
-    </button>
-
     <!-- PANEL -->
-    <Transition name="slide-up">
-      <div v-if="isOpen" class="mp-panel">
+    <div class="mp-panel">
 
         <!-- NO CONECTADO -->
         <div v-if="!isSpotifyConnected" class="mp-connect-state">
@@ -517,7 +325,6 @@ onUnmounted(() => {
               </svg>
               Spotify
             </span>
-            <button class="mp-close" @click="isOpen = false">✕</button>
           </div>
           <div class="mp-connect-body">
             <div class="mp-connect-icon">
@@ -568,7 +375,6 @@ onUnmounted(() => {
               <div class="mp-hero-actions">
                 <button class="mp-icon-btn" @click="pollSpotifyStatus" title="Sincronizar"><RefreshCw /></button>
                 <button class="mp-icon-btn mp-icon-btn-logout" @click="disconnectSpotify" title="Desconectar"><LogOut /></button>
-                <button class="mp-close mp-close-hero" @click="isOpen = false">✕</button>
               </div>
             </div>
 
@@ -662,7 +468,6 @@ onUnmounted(() => {
 
         </div>
       </div>
-    </Transition>
   </div>
 </template>
 
@@ -706,11 +511,10 @@ onUnmounted(() => {
 
 /* ─── PANEL ───────────────────────────────────────────── */
 .mp-panel {
-  position: fixed; bottom: 6rem; left: 1.5rem; z-index: 990;
-  width: 310px; background: #09090c;
-  border: 1px solid #1e1e24; border-radius: 20px;
-  box-shadow: 0 24px 70px rgba(0,0,0,0.8);
+  width: 100%; background: rgba(0,0,0,0.2);
+  border: 1px solid #1e1e24; border-radius: 12px;
   overflow: hidden; font-family: 'Inter', sans-serif;
+  margin-top: 1rem;
 }
 
 /* ─── ESTADO NO CONECTADO ─────────────────────────────── */

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import CertificationsView from '../views/CertificationsView.vue'
-import ApuntesView from '../views/ApuntesView.vue'
-import NotaView from '../views/NotaView.vue'
-import TerminalView from '../views/TerminalView.vue'
+const HomeView = () => import('../views/HomeView.vue')
+const CertificationsView = () => import('../views/CertificationsView.vue')
+const ApuntesView = () => import('../views/ApuntesView.vue')
+const NotaView = () => import('../views/NotaView.vue')
+const TerminalView = () => import('../views/TerminalView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +34,7 @@ const router = createRouter({
       component: TerminalView
     }
   ],
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to, _from, savedPosition) {
     if (to.hash) {
       return {
         el: to.hash,
