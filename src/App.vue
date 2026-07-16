@@ -13,7 +13,7 @@ import MatrixRain from './components/MatrixRain.vue'
     <MatrixRain />
     <SidePanel />
     
-    <div class="relative z-10 w-full flex-grow">
+    <div id="app-content" class="relative z-10 w-full flex-grow">
       <Header />
       
       <main class="w-full">
@@ -32,10 +32,6 @@ html {
 }
 
 body {
-  transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body.panel-open {
-  margin-right: 300px;
+  overflow-x: hidden;
 }
 </style>
