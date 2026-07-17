@@ -1,0 +1,16 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Proxy para la API de contacto directamente a Google Apps Script
+[[redirects]]
+  from = "/api/contact"
+  to = "https://script.google.com/macros/s/AKfycbwFQOJbPYHKJBHQjyklwP2pdeTWPRk81UdUxCuu72CbYIk7y2jJXCA3emTqJ0ZOlHAcdw/exec"
+  status = 200
+  force = true
+
+# Redirección SPA para Vue Router en Netlify (evita errores 404 al recargar la página)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

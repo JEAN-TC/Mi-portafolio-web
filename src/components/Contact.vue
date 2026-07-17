@@ -4,6 +4,7 @@ import { Send, CheckCircle, AlertCircle, Loader2 } from '@lucide/vue'
 import { t } from '../utils/i18n'
 
 const API_URL = '/api/contact'
+const FALLBACK_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwFQOJbPYHKJBHQjyklwP2pdeTWPRk81UdUxCuu72CbYIk7y2jJXCA3emTqJ0ZOlHAcdw/exec'
 
 const form = reactive({ name: '', email: '', message: '' })
 const isSubmitting = ref(false)
@@ -16,25 +17,67 @@ const handleSubmit = async () => {
   status.value = 'idle'
   errorMsg.value = ''
 
+  const payload = {
+    name: form.name.trim(),
+    email: form.email.trim(),
+    message: form.message.trim(),
+  }
+
   try {
+    // 1. Intentar endpoint /api/contact (funciona en local con Node y en Netlify via netlify.toml proxy)
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name:    form.name.trim(),
-        email:   form.email.trim(),
-        message: form.message.trim(),
-      }),
+      body: JSON.stringify(payload),
     })
-    const data = await res.json()
-    if (res.ok && data.success) {
+
+    let data: any = {}
+    try {
+      data = await res.json()
+    } catch {
+      // si la respuesta no es JSON (ej. 404 estático)
+    }
+
+    if (res.ok && (data.success || data.result === 'success')) {
       status.value = 'success'
       Object.assign(form, { name: '', email: '', message: '' })
-    } else {
-      status.value = 'error'
-      errorMsg.value = data.error || t('contact.errorDef')
+      return
     }
+
+    // 2. Fallback: Envío directo a Google Apps Script
+    if (FALLBACK_SCRIPT_URL) {
+      const directRes = await fetch(FALLBACK_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+      })
+      if (directRes.ok) {
+        status.value = 'success'
+        Object.assign(form, { name: '', email: '', message: '' })
+        return
+      }
+    }
+
+    status.value = 'error'
+    errorMsg.value = data.error || t('contact.errorDef')
   } catch {
+    // 3. Fallback en caso de error de red con /api/contact
+    try {
+      if (FALLBACK_SCRIPT_URL) {
+        const directRes = await fetch(FALLBACK_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+        })
+        if (directRes.ok) {
+          status.value = 'success'
+          Object.assign(form, { name: '', email: '', message: '' })
+          return
+        }
+      }
+    } catch {
+      // ignore
+    }
     status.value = 'error'
     errorMsg.value = t('contact.errorConn')
   } finally {
