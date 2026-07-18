@@ -64,7 +64,7 @@ const navLinks = computed(() => [
           </li>
           <li class="ft-info-item">
             <Phone class="ft-info-icon" />
-            <a href="tel:+51989697285" class="ft-info-link">+51 989697285</a>
+            <a href="https://wa.me/51989697285" target="_blank" rel="noopener noreferrer" class="ft-info-link">+51 989697285</a>
           </li>
           <li class="ft-info-item">
             <Mail class="ft-info-icon" />
