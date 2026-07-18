@@ -20,7 +20,7 @@ export default async (req: Request) => {
 
   try {
     const url = new URL(req.url);
-    const basicAuth = btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`);
+    const basicAuth = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
     
     // 1. Obtener Token
     const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
