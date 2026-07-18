@@ -1,24 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { Search, LogOut, RefreshCw, Play, Pause, SkipForward, SkipBack } from '@lucide/vue'
-import { redirectToSpotifyAuth, getSpotifyToken, refreshSpotifyToken, SpotifyAPI } from '../utils/spotify'
 
-// ==========================================
-// 1. ESTADO GLOBAL & TABS
-// ==========================================
-const activeTab = ref<'local' | 'spotify'>('local') // 'local' o 'spotify'
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || ''
-const clientID = ref(localStorage.getItem('spotify_client_id') || SPOTIFY_CLIENT_ID)
+const activeTab = ref<'local' | 'spotify'>('spotify')
 
-// Notificaciones / Alertas flotantes
+// Notificaciones
 const toastMessage = ref('')
 const toastType = ref<'success' | 'error' | 'info'>('info')
 const showToast = (msg: string, type: 'success' | 'error' | 'info' = 'info') => {
   toastMessage.value = msg
   toastType.value = type
-  setTimeout(() => {
-    toastMessage.value = ''
-  }, 5000)
+  setTimeout(() => { toastMessage.value = '' }, 5000)
 }
 
 // Formatear Segundos
@@ -29,18 +20,14 @@ const formatTime = (secs: number) => {
 }
 
 // ==========================================
-// 3. INTEGRACIÓN CON SPOTIFY API (PKCE)
+// INTEGRACIÓN CON SPOTIFY (Backend)
 // ==========================================
-const spotifyUser = ref<any>(null)
 const spotifyPlaying = ref<any>(null)
-const isSpotifyConnected = ref(false)
-const searchChecking = ref(false)
-const searchResults = ref<any[]>([])
-const searchQuery = ref('')
 const isPlayingSpotifyTrack = ref(false)
-const activeSpotifyDevice = ref(false)
 const progressMs = ref(0)
 const durationMs = ref(0)
+const isError = ref(false)
+
 const progressPercent = computed(() =>
   durationMs.value > 0 ? (progressMs.value / durationMs.value) * 100 : 0
 )
@@ -49,256 +36,96 @@ const durationTime = computed(() => formatTime(durationMs.value / 1000))
 
 let spotifyPollingInterval: any = null
 let progressTickerInterval: any = null
-let spotifyClientInstance: SpotifyAPI | null = null
 
-// Obtener la URI de redirección actual
-const getRedirectUri = () => {
-  return `${window.location.origin}${window.location.pathname}`
-}
-
-// Iniciar sesión con Spotify (OAuth PKCE)
-const connectToSpotify = async () => {
-  if (!clientID.value.trim()) {
-    showToast("Por favor, introduce un Client ID de Spotify válido.", "error")
-    return
-  }
-  // Guardamos el Client ID en localStorage
-  localStorage.setItem('spotify_client_id', clientID.value.trim())
-  
-  try {
-    showToast("Redirigiendo a Spotify para iniciar sesión...", "info")
-    await redirectToSpotifyAuth(clientID.value.trim(), getRedirectUri())
-  } catch (error) {
-    console.error(error)
-    showToast("Error al iniciar autorización con Spotify.", "error")
-  }
-}
-
-// Desconectar Spotify
-const disconnectSpotify = () => {
-  localStorage.removeItem('spotify_access_token')
-  localStorage.removeItem('spotify_refresh_token')
-  localStorage.removeItem('spotify_token_expires')
-  localStorage.removeItem('spotify_code_verifier')
-  spotifyUser.value = null
-  spotifyPlaying.value = null
-  isSpotifyConnected.value = false
-  spotifyClientInstance = null
-  searchResults.value = []
-  if (spotifyPollingInterval) clearInterval(spotifyPollingInterval)
-  showToast("Desconectado de Spotify.", "success")
-}
-
-// Inicializar y verificar tokens al cargar
-const initSpotify = async () => {
-  const params = new URLSearchParams(window.location.search)
-  const code = params.get('code')
-  const savedClientID = localStorage.getItem('spotify_client_id') || ''
-
-  if (code && savedClientID) {
-    // Intercambiar código por token
-    const verifier = localStorage.getItem('spotify_code_verifier') || ''
-    try {
-      // Limpiar query params de la URL inmediatamente para evitar loops
-      const url = new URL(window.location.href)
-      url.searchParams.delete('code')
-      url.searchParams.delete('state')
-      window.history.replaceState({}, document.title, url.toString())
-
-      showToast("Intercambiando token de Spotify...", "info")
-      const tokens = await getSpotifyToken(savedClientID, code, getRedirectUri(), verifier)
-      
-      const now = new Date()
-      const expiresAt = now.getTime() + tokens.expires_in * 1000
-
-      localStorage.setItem('spotify_access_token', tokens.access_token)
-      localStorage.setItem('spotify_refresh_token', tokens.refresh_token)
-      localStorage.setItem('spotify_token_expires', expiresAt.toString())
-      
-      clientID.value = savedClientID
-      isSpotifyConnected.value = true
-      activeTab.value = 'spotify'
-      
-      showToast("Conectado con éxito a Spotify!", "success")
-      await setupSpotifyClient(tokens.access_token)
-    } catch (error: any) {
-      console.error(error)
-      showToast("Error de autenticación con Spotify: " + error.message, "error")
-    }
-    return
-  }
-
-  // Si ya tenemos token guardado
-  const accessToken = localStorage.getItem('spotify_access_token')
-  const refreshToken = localStorage.getItem('spotify_refresh_token')
-
-  if (accessToken && refreshToken) {
-    await ensureTokenFreshness()
-    isSpotifyConnected.value = true
-    await setupSpotifyClient(localStorage.getItem('spotify_access_token') || accessToken)
-  }
-}
-
-// Función para asegurar que el token esté vivo
-const ensureTokenFreshness = async () => {
-  const expiresAt = Number(localStorage.getItem('spotify_token_expires') || '0')
-  const refreshToken = localStorage.getItem('spotify_refresh_token')
-  const now = new Date().getTime()
-
-  if (refreshToken && now > expiresAt - 60000) {
-    try {
-      const currentClientID = clientID.value || localStorage.getItem('spotify_client_id') || SPOTIFY_CLIENT_ID
-      const tokens = await refreshSpotifyToken(currentClientID, refreshToken)
-      const newExpiresAt = new Date().getTime() + tokens.expires_in * 1000
-
-      localStorage.setItem('spotify_access_token', tokens.access_token)
-      if (tokens.refresh_token) {
-        localStorage.setItem('spotify_refresh_token', tokens.refresh_token)
-      }
-      localStorage.setItem('spotify_token_expires', newExpiresAt.toString())
-      
-      if (spotifyClientInstance) {
-        spotifyClientInstance.updateToken(tokens.access_token)
-      }
-    } catch (err: any) {
-      console.error("Error al refrescar token", err)
-      if (err.message && (err.message.includes("invalid_grant") || err.message.includes("400"))) {
-        disconnectSpotify()
-      }
-    }
-  }
-}
-
-// Configurar el Cliente de API
-const setupSpotifyClient = async (token: string) => {
-  spotifyClientInstance = new SpotifyAPI(token)
-  try {
-    spotifyUser.value = await spotifyClientInstance.getUserProfile()
-    await pollSpotifyStatus()
-    
-    // Iniciar polling continuo cada 5 segundos para actualizar el estado
-    spotifyPollingInterval = setInterval(pollSpotifyStatus, 5000)
-  } catch (error) {
-    console.error("Error de cliente", error)
-  }
-}
-
-// Actualizar canción activa en Spotify
 const pollSpotifyStatus = async () => {
-  if (!spotifyClientInstance) return
-  await ensureTokenFreshness()
   try {
-    const current = await spotifyClientInstance.getCurrentlyPlaying()
-    if (current) {
-      spotifyPlaying.value = current.item
-      isPlayingSpotifyTrack.value = current.is_playing
-      activeSpotifyDevice.value = true
-      progressMs.value = current.progress_ms ?? 0
-      durationMs.value = current.item?.duration_ms ?? 0
-      // Reiniciar ticker local
+    const res = await fetch('/api/spotify')
+    if (!res.ok) throw new Error('Error backend')
+    const data = await res.json()
+    
+    if (data.is_playing && data.item) {
+      spotifyPlaying.value = data.item
+      isPlayingSpotifyTrack.value = true
+      progressMs.value = data.progress_ms ?? 0
+      durationMs.value = data.item.duration_ms ?? 0
+      isError.value = false
+
       if (progressTickerInterval) clearInterval(progressTickerInterval)
-      if (current.is_playing) {
-        progressTickerInterval = setInterval(() => {
-          if (progressMs.value < durationMs.value) progressMs.value += 1000
-        }, 1000)
-      }
+      progressTickerInterval = setInterval(() => {
+        if (progressMs.value < durationMs.value) progressMs.value += 1000
+      }, 1000)
     } else {
       spotifyPlaying.value = null
       isPlayingSpotifyTrack.value = false
-      activeSpotifyDevice.value = false
       if (progressTickerInterval) clearInterval(progressTickerInterval)
     }
   } catch (err) {
-    console.error('Error al consultar reproducción en Spotify', err)
+    isError.value = true
+    if (progressTickerInterval) clearInterval(progressTickerInterval)
   }
 }
 
-// Buscar en Spotify
-const handleSearch = async () => {
-  if (!spotifyClientInstance || !searchQuery.value.trim()) return
-  searchChecking.value = true
+// ACCIONES (Control remoto)
+const doAction = async (action: string, uri?: string) => {
   try {
-    searchResults.value = await spotifyClientInstance.searchTracks(searchQuery.value)
-  } catch (err) {
-    showToast("Error al buscar canciones.", "error")
-  } finally {
-    searchChecking.value = false
-  }
-}
+    // Si pausamos o reproducimos, predecimos la respuesta para mayor fluidez
+    if (action === 'play' && !uri) isPlayingSpotifyTrack.value = true
+    if (action === 'pause') isPlayingSpotifyTrack.value = false
 
-// Intentar reproducir tema en Spotify
-const playSpotifyTrack = async (track: any) => {
-  if (!spotifyClientInstance) return
-
-  try {
-    // Intentar reproducir en Spotify Connect
-    showToast(`Intentando reproducir "${track.name}" en tu dispositivo Spotify...`, "info")
-    await spotifyClientInstance.playTrack(track.uri)
-    showToast(`Reproduciendo "${track.name}" en Spotify`, "success")
-    isPlayingSpotifyTrack.value = true
+    const res = await fetch('/api/spotify/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, uri })
+    })
+    if (!res.ok) throw new Error('Action failed')
+    
+    // Forzamos actualización 1s después para asegurar
     setTimeout(pollSpotifyStatus, 1000)
-  } catch (err: any) {
-    console.warn("Spotify Connect", err)
-    showToast("No se pudo reproducir en Spotify. Abre la app en algún dispositivo.", "error")
+  } catch (error) {
+    showToast('Error al controlar Spotify. Asegúrate de tener Spotify activo.', 'error')
   }
 }
 
-// Controladores rápidos de Spotify
-const togglePlaySpotify = async () => {
-  if (!spotifyClientInstance) return
+const prevTrack = () => doAction('previous')
+const nextTrack = () => doAction('next')
+const togglePlay = () => doAction(isPlayingSpotifyTrack.value ? 'pause' : 'play')
+
+// BÚSQUEDA
+const searchQuery = ref('')
+const searchResults = ref<any[]>([])
+const isSearching = ref(false)
+
+const searchSpotify = async () => {
+  if (!searchQuery.value) {
+    searchResults.value = []
+    return
+  }
+  isSearching.value = true
   try {
-    if (isPlayingSpotifyTrack.value) {
-      await spotifyClientInstance.pause()
-      isPlayingSpotifyTrack.value = false
-    } else {
-      await spotifyClientInstance.resume()
-      isPlayingSpotifyTrack.value = true
-    }
-    setTimeout(pollSpotifyStatus, 500)
-  } catch (err: any) {
-    showToast("Error de control: " + err.message, "error")
+    const res = await fetch(`/api/spotify/search?q=${encodeURIComponent(searchQuery.value)}`)
+    const data = await res.json()
+    searchResults.value = data.tracks?.items || []
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isSearching.value = false
   }
 }
 
-const nextSpotify = async () => {
-  if (!spotifyClientInstance) return
-  try {
-    await spotifyClientInstance.next()
-    showToast("Siguiente tema en Spotify", "success")
-    setTimeout(pollSpotifyStatus, 800)
-  } catch (err: any) {
-    showToast("Error: " + err.message, "error")
-  }
+const playSearchedTrack = async (uri: string) => {
+  await doAction('play', uri)
+  searchQuery.value = ''
+  searchResults.value = []
 }
 
-const prevSpotify = async () => {
-  if (!spotifyClientInstance) return
-  try {
-    await spotifyClientInstance.previous()
-    showToast("Tema anterior en Spotify", "success")
-    setTimeout(pollSpotifyStatus, 800)
-  } catch (err: any) {
-    showToast("Error: " + err.message, "error")
-  }
-}
-
-// Manejar eventos desde la terminal
-const handleTerminalMusic = (_e: Event) => {
-  // Ignorado temporalmente - funciones locales eliminadas
-}
-
-// ==========================================
-// LÍCLO DE VIDA Y MONTAJE
-// ==========================================
 onMounted(() => {
-  initSpotify()
-  window.addEventListener('terminal-music', handleTerminalMusic)
+  pollSpotifyStatus()
+  spotifyPollingInterval = setInterval(pollSpotifyStatus, 10000)
 })
 
 onUnmounted(() => {
   if (spotifyPollingInterval) clearInterval(spotifyPollingInterval)
   if (progressTickerInterval) clearInterval(progressTickerInterval)
-  window.removeEventListener('terminal-music', handleTerminalMusic)
 })
 
 </script>
@@ -313,161 +140,117 @@ onUnmounted(() => {
       </div>
     </Transition>
 
-    <!-- PANEL -->
+    <!-- PANEL PRINCIPAL -->
     <div class="mp-panel">
-
-        <!-- NO CONECTADO -->
-        <div v-if="!isSpotifyConnected" class="mp-connect-state">
-          <div class="mp-connect-header">
-            <span class="mp-header-label">
-              <svg class="mp-sp-logo" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32zm.12-3.37C15.2 8.35 8.79 8.14 5.07 9.27c-.58.18-1.2-.16-1.38-.74-.18-.58.16-1.2.74-1.38 4.27-1.3 11.35-1.06 15.82 1.6.52.3 1.7.9.36 1.42-.3.52-.9 1.7-1.42 1.38z"/>
-              </svg>
-              Spotify
-            </span>
+      
+      <!-- ESTADO CONECTADO -->
+      <div class="mp-connected">
+        <!-- HERO -->
+        <div class="mp-hero">
+          <div class="mp-hero-bg" v-if="spotifyPlaying?.album?.images?.[0]?.url">
+            <img :src="spotifyPlaying.album.images[0].url" alt="" />
           </div>
-          <div class="mp-connect-body">
-            <div class="mp-connect-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32zm.12-3.37C15.2 8.35 8.79 8.14 5.07 9.27c-.58.18-1.2-.16-1.38-.74-.18-.58.16-1.2.74-1.38 4.27-1.3 11.35-1.06 15.82 1.6.52.3 1.7.9.36 1.42-.3.52-.9 1.7-1.42 1.38z"/>
-              </svg>
-            </div>
-            <p class="mp-connect-title">Conectar Spotify</p>
-            <p class="mp-connect-desc">Vincula tu cuenta para ver qué estás escuchando en tiempo real.</p>
-            
-            <!-- Botón de Conexión directa -->
-            <button class="mp-connect-btn" @click="connectToSpotify">
-              <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32zm.12-3.37C15.2 8.35 8.79 8.14 5.07 9.27c-.58.18-1.2-.16-1.38-.74-.18-.58.16-1.2.74-1.38 4.27-1.3 11.35-1.06 15.82 1.6.52.3 1.7.9.36 1.42-.3.52-.9 1.7-1.42 1.38z"/>
-              </svg>
-              Conectar con Spotify
-            </button>
+          <div class="mp-hero-overlay"></div>
 
-            <!-- Ajustes avanzados (Oculto por defecto para limpiar la UI) -->
-            <details class="mp-advanced-settings">
-              <summary class="mp-advanced-title">Configuración avanzada</summary>
-              <div class="mp-advanced-content">
-                <label class="mp-advanced-label">Client ID de la aplicación:</label>
-                <input v-model="clientID" class="mp-input" type="text" placeholder="Client ID..." />
-              </div>
-            </details>
-          </div>
-        </div>
-
-        <!-- CONECTADO -->
-        <div v-else class="mp-connected">
-
-          <!-- HERO: portada como fondo + info encima -->
-          <div class="mp-hero">
-            <!-- Fondo borroso con la portada -->
-            <div class="mp-hero-bg" v-if="spotifyPlaying?.album?.images?.[0]?.url">
-              <img :src="spotifyPlaying.album.images[0].url" alt="" />
-            </div>
-            <div class="mp-hero-overlay"></div>
-
-            <!-- Header sobre la portada -->
-            <div class="mp-hero-header">
-              <div class="mp-user-mini" v-if="spotifyUser">
-                <img v-if="spotifyUser?.images?.[0]?.url" :src="spotifyUser.images[0].url" class="mp-avatar" alt="avatar" />
-                <div v-else class="mp-avatar-placeholder">{{ spotifyUser?.display_name?.[0] }}</div>
-                <span class="mp-username">{{ spotifyUser?.display_name }}</span>
-              </div>
-              <div class="mp-hero-actions">
-                <button class="mp-icon-btn" @click="pollSpotifyStatus" title="Sincronizar"><RefreshCw /></button>
-                <button class="mp-icon-btn mp-icon-btn-logout" @click="disconnectSpotify" title="Desconectar"><LogOut /></button>
-              </div>
-            </div>
-
-            <!-- Portada principal + info -->
-            <div class="mp-hero-content">
-              <div class="mp-cover-wrap">
-                <img
-                  v-if="spotifyPlaying?.album?.images?.[0]?.url"
-                  :src="spotifyPlaying.album.images[0].url"
-                  class="mp-cover-img"
-                  alt="cover"
-                />
-                <div v-else class="mp-cover-empty">
-                  <svg viewBox="0 0 24 24" fill="currentColor" class="mp-cover-logo">
-                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32zm.12-3.37C15.2 8.35 8.79 8.14 5.07 9.27c-.58.18-1.2-.16-1.38-.74-.18-.58.16-1.2.74-1.38 4.27-1.3 11.35-1.06 15.82 1.6.52.3 1.7.9.36 1.42-.3.52-.9 1.7-1.42 1.38z"/>
-                  </svg>
-                </div>
-                <!-- Barras de audio sobre la portada -->
-                <div v-if="isPlayingSpotifyTrack" class="mp-cover-playing">
-                  <div class="mp-wave-bars">
-                    <span v-for="i in 4" :key="i"></span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mp-track-info">
-                <p v-if="spotifyPlaying" class="mp-track-name">{{ spotifyPlaying.name }}</p>
-                <p v-else class="mp-track-name mp-idle">Nada sonando...</p>
-                <p class="mp-track-artist">
-                  {{ spotifyPlaying
-                    ? spotifyPlaying.artists?.map((a: any) => a.name).join(', ')
-                    : 'Abre Spotify y reproduce algo' }}
-                </p>
-                <p v-if="spotifyPlaying?.album?.name" class="mp-track-album">
-                  {{ spotifyPlaying.album.name }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Barra de progreso -->
-          <div class="mp-progress-section">
-            <div class="mp-progress-bar-wrap">
-              <div class="mp-progress-bar" :style="{ width: progressPercent + '%' }"></div>
-            </div>
-            <div class="mp-progress-times">
-              <span>{{ durationMs > 0 ? progressTime : '0:00' }}</span>
-              <span>{{ durationMs > 0 ? durationTime : '0:00' }}</span>
-            </div>
-          </div>
-
-          <!-- Controles -->
-          <div class="mp-controls">
-            <button class="mp-ctrl" @click="prevSpotify" title="Anterior"><SkipBack /></button>
-            <button class="mp-ctrl mp-ctrl-play" @click="togglePlaySpotify">
-              <Pause v-if="isPlayingSpotifyTrack" />
-              <Play v-else />
-            </button>
-            <button class="mp-ctrl" @click="nextSpotify" title="Siguiente"><SkipForward /></button>
-          </div>
-
-          <!-- Búsqueda -->
-          <div class="mp-search-wrap">
-            <div class="mp-search-row">
-              <Search class="mp-search-icon" />
-              <input
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
-                class="mp-search-input"
-                type="text"
-                placeholder="Buscar canción o artista..."
+          <div class="mp-hero-content">
+            <div class="mp-cover-wrap">
+              <img
+                v-if="spotifyPlaying?.album?.images?.[0]?.url"
+                :src="spotifyPlaying.album.images[0].url"
+                class="mp-cover-img"
+                alt="cover"
               />
-            </div>
-            <div v-if="searchChecking" class="mp-spinner"></div>
-            <div v-else-if="searchResults.length > 0" class="mp-results">
-              <div
-                v-for="track in searchResults"
-                :key="track.id"
-                class="mp-result-item"
-                @click="playSpotifyTrack(track)"
-              >
-                <img :src="track.album?.images?.[2]?.url || track.album?.images?.[0]?.url" class="mp-result-cover" alt="cover" />
-                <div class="mp-result-info">
-                  <p class="mp-result-name">{{ track.name }}</p>
-                  <p class="mp-result-artist">{{ track.artists.map((a: any) => a.name).join(', ') }}</p>
+              <div v-else class="mp-cover-empty">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="mp-cover-logo">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32zm.12-3.37C15.2 8.35 8.79 8.14 5.07 9.27c-.58.18-1.2-.16-1.38-.74-.18-.58.16-1.2.74-1.38 4.27-1.3 11.35-1.06 15.82 1.6.52.3 1.7.9.36 1.42-.3.52-.9 1.7-1.42 1.38z"/>
+                </svg>
+              </div>
+              <div v-if="isPlayingSpotifyTrack" class="mp-cover-playing">
+                <div class="mp-wave-bars">
+                  <span v-for="i in 4" :key="i"></span>
                 </div>
-                <div class="mp-result-play"><Play /></div>
+              </div>
+            </div>
+
+            <div class="mp-track-info">
+              <p v-if="spotifyPlaying" class="mp-track-name">{{ spotifyPlaying.name }}</p>
+              <p v-else-if="isError" class="mp-track-name mp-idle">Error de conexión...</p>
+              <p v-else class="mp-track-name mp-idle">Nada sonando...</p>
+              
+              <p class="mp-track-artist">
+                {{ spotifyPlaying
+                  ? spotifyPlaying.artists?.map((a: any) => a.name).join(', ')
+                  : (isError ? 'Intenta más tarde' : 'Actualmente sin música') }}
+              </p>
+              <p v-if="spotifyPlaying?.album?.name" class="mp-track-album">
+                {{ spotifyPlaying.album.name }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mp-progress-section">
+          <div class="mp-progress-bar-wrap">
+            <div class="mp-progress-bar" :style="{ width: progressPercent + '%' }"></div>
+          </div>
+          <div class="mp-progress-times">
+            <span>{{ durationMs > 0 ? progressTime : '0:00' }}</span>
+            <span>{{ durationMs > 0 ? durationTime : '0:00' }}</span>
+          </div>
+        </div>
+
+        <!-- CONTROLES RESTAURADOS -->
+        <div class="mp-controls">
+          <button @click="prevTrack" class="mp-ctrl" title="Anterior">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+          </button>
+          
+          <button @click="togglePlay" class="mp-ctrl mp-ctrl-play" :title="isPlayingSpotifyTrack ? 'Pausar' : 'Reproducir'">
+            <svg v-if="isPlayingSpotifyTrack" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <svg v-else viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          
+          <button @click="nextTrack" class="mp-ctrl" title="Siguiente">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          </button>
+        </div>
+
+        <!-- BÚSQUEDA RESTAURADA -->
+        <div class="mp-search-wrap">
+          <div class="mp-search-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mp-search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input
+              v-model="searchQuery"
+              @input="searchSpotify"
+              type="text"
+              class="mp-search-input"
+              placeholder="Buscar canción y reproducir remotamente..."
+            />
+          </div>
+          
+          <div v-if="isSearching" class="mp-spinner"></div>
+          
+          <div v-if="searchResults.length > 0" class="mp-results">
+            <div
+              v-for="track in searchResults"
+              :key="track.id"
+              class="mp-result-item"
+              @click="playSearchedTrack(track.uri)"
+            >
+              <img v-if="track.album?.images?.[0]?.url" :src="track.album.images[0].url" class="mp-result-cover" />
+              <div class="mp-result-info">
+                <p class="mp-result-name">{{ track.name }}</p>
+                <p class="mp-result-artist">{{ track.artists?.map((a: any) => a.name).join(', ') }}</p>
+              </div>
+              <div class="mp-result-play">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
               </div>
             </div>
           </div>
-
         </div>
+
       </div>
+    </div>
   </div>
 </template>
 
@@ -485,112 +268,12 @@ onUnmounted(() => {
 .mp-toast.success .mp-toast-dot { background: #1db954; }
 .mp-toast.error .mp-toast-dot { background: #ff3333; }
 
-/* ─── FAB ─────────────────────────────────────────────── */
-.mp-fab {
-  position: fixed; bottom: 1.5rem; left: 1.5rem; z-index: 999;
-  width: 52px; height: 52px; border-radius: 14px;
-  border: 1px solid #222; background: #0e0e12;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
-}
-.mp-fab:hover { transform: scale(1.06); border-color: #333; }
-.mp-fab.playing { border-color: rgba(29,185,84,0.45); box-shadow: 0 0 20px rgba(29,185,84,0.18); }
-.mp-fab-cover { position: absolute; inset: 0; }
-.mp-fab-cover img { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; filter: saturate(0.6); }
-.mp-fab-icon { position: relative; display: flex; align-items: center; justify-content: center; z-index: 1; }
-.mp-fab-svg { width: 20px; height: 20px; color: #777; }
-.mp-fab.playing .mp-fab-svg { color: #1db954; }
-.mp-fab-bars { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
-.mp-fab-bars span { display: block; width: 3px; border-radius: 2px; background: #1db954; animation: bar-bounce 0.8s ease-in-out infinite; }
-.mp-fab-bars span:nth-child(1) { height: 55%; animation-delay: 0s; }
-.mp-fab-bars span:nth-child(2) { height: 100%; animation-delay: 0.15s; }
-.mp-fab-bars span:nth-child(3) { height: 70%; animation-delay: 0.3s; }
-.mp-fab-bars span:nth-child(4) { height: 40%; animation-delay: 0.45s; }
-
-@keyframes bar-bounce { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
-
 /* ─── PANEL ───────────────────────────────────────────── */
 .mp-panel {
   width: 100%; background: rgba(0,0,0,0.2);
   border: 1px solid #1e1e24; border-radius: 12px;
   overflow: hidden; font-family: 'Inter', sans-serif;
   margin-top: 1rem;
-}
-
-/* ─── ESTADO NO CONECTADO ─────────────────────────────── */
-.mp-connect-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid #13131a;
-}
-.mp-connect-body {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 0.8rem; padding: 1.5rem 1.25rem;
-}
-.mp-header-label {
-  display: flex; align-items: center; gap: 0.5rem;
-  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #1db954;
-}
-.mp-sp-logo { width: 13px; height: 13px; }
-.mp-close { background: none; border: none; color: #444; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; line-height: 1; }
-.mp-close:hover { color: #ccc; }
-.mp-connect-icon {
-  width: 52px; height: 52px; border-radius: 15px;
-  background: rgba(29,185,84,0.08); border: 1px solid rgba(29,185,84,0.15);
-  display: flex; align-items: center; justify-content: center;
-}
-.mp-connect-icon svg { width: 26px; height: 26px; color: #1db954; }
-.mp-connect-title { font-size: 1rem; font-weight: 700; color: #eee; }
-.mp-connect-desc { font-size: 0.76rem; color: #555; text-align: center; line-height: 1.6; }
-.mp-input {
-  width: 100%; background: #111116; border: 1px solid #222; border-radius: 10px;
-  padding: 0.55rem 0.85rem; font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem; color: #ccc; outline: none; transition: border-color 0.2s;
-}
-.mp-input:focus { border-color: rgba(29,185,84,0.4); }
-.mp-input::placeholder { color: #3a3a3a; }
-.mp-connect-btn {
-  width: 100%; background: #1db954; color: #000; border: none; border-radius: 10px;
-  padding: 0.65rem; font-size: 0.82rem; font-weight: 700; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-  transition: background 0.2s, transform 0.15s;
-}
-.mp-connect-btn:hover { background: #1ed760; transform: translateY(-1px); }
-
-/* Ajustes avanzados dropdown */
-.mp-advanced-settings {
-  width: 100%;
-  margin-top: 0.5rem;
-}
-.mp-advanced-title {
-  font-size: 0.68rem;
-  color: #444;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.2s;
-  text-align: center;
-  list-style: none; /* Oculta la flecha por defecto en algunos navegadores */
-}
-.mp-advanced-title::-webkit-details-marker {
-  display: none;
-}
-.mp-advanced-title:hover {
-  color: #777;
-}
-.mp-advanced-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  margin-top: 0.6rem;
-  padding: 0.6rem;
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-}
-.mp-advanced-label {
-  font-size: 0.65rem;
-  color: #555;
-  font-weight: 600;
 }
 
 /* ─── ESTADO CONECTADO ────────────────────────────────── */
@@ -619,24 +302,7 @@ onUnmounted(() => {
   padding: 0.85rem 1rem 0;
 }
 .mp-user-mini { display: flex; align-items: center; gap: 0.45rem; }
-.mp-avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
-.mp-avatar-placeholder {
-  width: 20px; height: 20px; border-radius: 50%;
-  background: #1db954; display: flex; align-items: center; justify-content: center;
-  font-size: 0.6rem; font-weight: 700; color: #000;
-}
-.mp-username { font-size: 0.72rem; color: rgba(255,255,255,0.5); }
-.mp-hero-actions { display: flex; align-items: center; gap: 0.25rem; }
-.mp-icon-btn {
-  background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.35);
-  padding: 0.3rem; display: flex; align-items: center; border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
-}
-.mp-icon-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.06); }
-.mp-icon-btn svg { width: 13px; height: 13px; }
-.mp-icon-btn-logout:hover { color: #ff4444; }
-.mp-close-hero { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.3); font-size: 0.8rem; padding: 0.3rem; transition: color 0.2s; }
-.mp-close-hero:hover { color: rgba(255,255,255,0.8); }
+.mp-username { font-size: 0.85rem; font-weight: 600; color: #fff; opacity: 0.9; }
 
 .mp-hero-content {
   position: relative; z-index: 2;
@@ -662,7 +328,7 @@ onUnmounted(() => {
   font-size: 0.92rem; font-weight: 700; color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3;
 }
-.mp-track-name.mp-idle { color: #444; font-weight: 400; }
+.mp-track-name.mp-idle { color: #888; font-weight: 400; }
 .mp-track-artist {
   font-size: 0.74rem; color: rgba(255,255,255,0.5); margin-top: 3px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -746,6 +412,5 @@ onUnmounted(() => {
 /* ─── TRANSITIONS ─────────────────────────────────────── */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.25s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-.slide-up-enter-active, .slide-up-leave-active { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease; }
-.slide-up-enter-from, .slide-up-leave-to { transform: translateY(12px) scale(0.97); opacity: 0; }
+@keyframes bar-bounce { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
 </style>
