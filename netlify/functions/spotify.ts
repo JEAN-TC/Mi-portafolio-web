@@ -32,8 +32,23 @@ export default async (req: Request) => {
     if (!tokenResponse.ok) throw new Error('Error token');
     const { access_token } = await tokenResponse.json();
 
-    // 2. Rutas
-    if (url.pathname.endsWith('/action')) {
+    // 2. Rutas basadas en el método y los parámetros en vez de pathname
+    // (Porque Netlify reescribe el pathname a /.netlify/functions/spotify)
+
+    // A. BÚSQUEDA (GET con parámetro 'q')
+    if (req.method === 'GET' && url.searchParams.has('q')) {
+      const q = url.searchParams.get('q');
+      if (!q) return new Response(JSON.stringify({ tracks: { items: [] } }), { status: 200, headers });
+
+      const searchRes = await fetch(`https://api.spotify.com/v1/search?type=track&limit=5&q=${encodeURIComponent(q)}`, {
+        headers: { 'Authorization': `Bearer ${access_token}` }
+      });
+      const data = await searchRes.json();
+      return new Response(JSON.stringify(data), { status: 200, headers });
+    }
+
+    // B. ACCIÓN DE CONTROL (POST)
+    if (req.method === 'POST') {
       const { action, uri } = await req.json();
       let spotifyUrl = '';
       let method = 'POST';
@@ -63,18 +78,7 @@ export default async (req: Request) => {
       return new Response(JSON.stringify({ success: true }), { status: 200, headers });
     }
 
-    if (url.pathname.endsWith('/search')) {
-      const q = url.searchParams.get('q');
-      if (!q) return new Response(JSON.stringify({ tracks: { items: [] } }), { status: 200, headers });
-
-      const searchRes = await fetch(`https://api.spotify.com/v1/search?type=track&limit=5&q=${encodeURIComponent(q)}`, {
-        headers: { 'Authorization': `Bearer ${access_token}` }
-      });
-      const data = await searchRes.json();
-      return new Response(JSON.stringify(data), { status: 200, headers });
-    }
-
-    // Default: GET status
+    // C. ESTADO ACTUAL (GET sin parámetros)
     const playingResponse = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
       headers: { 'Authorization': `Bearer ${access_token}` },
     });
