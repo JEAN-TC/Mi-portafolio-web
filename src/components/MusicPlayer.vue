@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 
-const activeTab = ref<'local' | 'spotify'>('spotify')
-
 // Notificaciones
 const toastMessage = ref('')
 const toastType = ref<'success' | 'error' | 'info'>('info')

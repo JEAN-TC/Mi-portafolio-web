@@ -132,7 +132,7 @@ function handleMouseMove(e: MouseEvent) {
           </div>
 
           <!-- Content Details -->
-          <div class="p-8 flex flex-col flex-grow z-10" style="border-top: 2px solid rgba(255, 0, 0, 0.85);">
+          <div class="p-8 flex flex-col flex-grow z-10" style="border-top: 1px solid rgba(255, 0, 0, 0.5);">
             <h3 class="text-2xl font-bold text-white group-hover:text-[#ff0000] transition-colors duration-300 mb-3">
               {{ project.title }}
             </h3>
