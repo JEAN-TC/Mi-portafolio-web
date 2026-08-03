@@ -32,3 +32,5 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Redeploy solicitado después de renovar el token de Spotify
