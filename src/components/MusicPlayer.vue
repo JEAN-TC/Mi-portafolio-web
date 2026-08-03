@@ -268,312 +268,250 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.72rem 0…3197 tokens truncated…s universitarios y constancias de participación.'
-        }
-      }
-    },
-    contact: {
-      label: "05. Hablemos",
-      title1: "Ponte en",
-      title2: "Contacto",
-      subtitle: "Conversemos sobre tu próximo proyecto o colaboración.",
-      nameLabel: "Nombre",
-      namePh: "Tu nombre completo",
-      emailLabel: "Email",
-      emailPh: "tu@email.com",
-      msgLabel: "Mensaje",
-      msgPh: "¿En qué te puedo ayudar?",
-      send: "Enviar Mensaje",
-      sending: "Enviando...",
-      success: "¡Mensaje enviado! Te responderé lo antes posible.",
-      errorDef: "Error inesperado. Inténtalo de nuevo.",
-      errorConn: "No se pudo conectar con el servidor.",
-      errorSend: "Error al enviar.",
-      directStart: "¿Prefieres escribirme directo?",
-      directMid: "Escríbeme directo a"
-    },
-    stats: {
-      title: "Estadísticas de Laboratorios",
-      pwned: "Sistemas Pwned",
-      flags: "Banderas (Flags)",
-      vulns: "Vulnerabilidades",
-      audits: "Auditorías Limpias"
-    },
-    services: {
-      label: "Lo que hago",
-      title1: "Áreas de",
-      title2: "Especialización",
-      subtitle: "Combino la mentalidad ofensiva de un hacker con la capacidad constructiva de un desarrollador para crear soluciones inquebrantables.",
-      list: [
-        {
-          title: 'Auditoría Web & Pentesting',
-          desc: 'Análisis de vulnerabilidades, pruebas de penetración y reporte de fallos de seguridad en aplicaciones web utilizando OWASP Top 10 y herramientas especializadas.'
-        },
-        {
-          title: 'Desarrollo SecDevOps',
-          desc: 'Construcción de aplicaciones full-stack robustas integrando prácticas de seguridad desde el código fuente, previniendo inyecciones SQL, XSS y CSRF por defecto.'
-        },
-        {
-          title: 'Arquitectura Segura',
-          desc: 'Diseño e implementación de infraestructuras en la nube (AWS) y redes locales con configuraciones de firewalls, segmentación y control de accesos estrictos.'
-        }
-      ]
-    },
-    nav: {
-      home: "Inicio",
-      profile: "Perfil",
-      skills: "Habilidades",
-      certs: "Certificaciones",
-      projects: "Proyectos",
-      notes: "Apuntes",
-      terminal: "Terminal",
-      contact: "Contacto"
-    },
-    header: {
-      online: "En línea",
-      idle: "Ausente",
-      dnd: "No molestar",
-      offline: "Desconectado"
-    },
-    footer: {
-      bio: "Security Engineer & Full Stack Developer apasionado por la ciberseguridad, el desarrollo web y el aprendizaje continuo.",
-      navigation: "Navegación",
-      contact: "Contacto",
-      downloadCv: "Descargar CV",
-      socials: "Redes",
-      rights: "Todos los derechos reservados.",
-      backToTop: "Volver arriba"
-    }
-  },
-  en: {
-    sidePanel: {
-      title: "Command Center",
-      language: "Language",
-      findMe: "External Networks",
-      quote: `"He who stops learning ceases to be dangerous."`,
-      quoteAuthor: "— Jean Piero",
-      downloadCv: "Extract Resume",
-      copyEmail: "Copy Email",
-      emailCopied: "Copied!",
-      performanceMode: "Performance Mode",
-      performanceOn: "Reduced Graphics",
-      performanceOff: "Max Graphics",
-      sysStatus: "System Status",
-      statusSecure: "Secure Connection",
-      statusOnline: "Server Online",
-      quickAccess: "Quick Access",
-      openTerminal: "Init Terminal"
-    },
-    hero: {
-      hi: "Hi, I'm",
-      phrases: [
-        'I connect security, networks, and development.',
-        'I learn by building and documenting.',
-        'I break systems safely to understand them.',
-        'I turn technical curiosity into real projects.',
-      ],
-      aboutLabel: "about me",
-      aboutText1: "I like following a question all the way through: reading, testing, getting things wrong, and documenting what I learned.",
-      aboutText2: "Curiosity becomes useful when it ends in something that works",
-      rasgos: [
-        { label: 'Investigate', desc: "It's not enough for something to work. I need to know why it works, and what happens if I break it." },
-        { label: 'Night Owl', desc: 'I function better at night. Silence helps me think without interruptions.' },
-        { label: 'Break to Understand', desc: 'The best way to learn something is to take it completely apart. That way I understand it from the inside out.' },
-        { label: 'Rabbit holes', desc: 'I start looking for one thing and end up three hours later understanding something completely different. And that is fine.' },
-        { label: 'Introvert', desc: "I'm quiet until I find the right topic. Then I don't stop." },
-        { label: 'Always Learning', desc: "He who stops learning ceases to be relevant. I don't allow myself to stagnate." }
-      ],
-      mindsetLabel: "mindset",
-      mindsetQuote1: "I do not design for the perfect scenario,",
-      mindsetQuote2: "I forge for adversity.",
-      mindsetSub: "Anticipating failure is not pessimism, it is preparation. Understanding how systems break has taught me that true strength comes from recognizing our own vulnerabilities.",
-      notesLabel: "notes",
-      viewAllNotes: "View all notes"
-    },
-    about: {
-      profile: "01 — Profile",
-      studentOf: "Student of",
-      cyber: "Cybersecurity",
-      andDev: "and development.",
-      roleCyber: "Cybersecurity",
-      roleDev: "Web Development",
-      bio1: "Cybersecurity Student. I am passionate about understanding systems and how they work — from their architecture to their limits. I work with the conviction that whoever understands the system, masters it.",
-      bio2: "If something catches my attention at 2am, I won't let it go until I completely understand it.",
-      yearsLabel: "Years",
-      certsLabel: "Certs",
-      curiosityLabel: "Curiosity",
-      interests: "Interests",
-      education: "Education",
-      inProgress: "In progress",
-      completed: "Completed",
-      intList: ['Cybersecurity', 'Web Dev', 'Networking', 'CTF', 'Open Source', 'Linux']
-    },
-    projects: {
-      label: "03. Portfolio",
-      title1: "Featured",
-      title2: "Works",
-      subtitle: "Built projects and documented labs that show how I think, implement, and verify security and development solutions.",
-      list: [
-        {
-          title: 'File Integrity Monitor (FIM)',
-          focus: 'Defensive security',
-          desc: 'I built a monitor that detects unauthorized changes and presents them in a web dashboard so events can be reviewed without losing context.',
-          proof: 'Change detection and real-time visualization'
-        },
-        {
-          title: 'Task Manager',
-          focus: 'Full-stack application',
-          desc: 'I developed an application to create, organize, and track tasks while caring for both the user flow and the technical structure.',
-          proof: 'Complete CRUD flow with a responsive interface'
-        },
-        {
-          title: 'Web-Vul',
-          focus: 'Web security',
-          desc: 'A web lab created to practice vulnerability analysis, understand impact, and strengthen secure development habits.',
-          proof: 'Controlled analysis and mitigation scenarios'
-        },
-        {
-          title: 'Wazuh SIEM/XDR',
-          focus: 'SOC laboratory',
-          desc: 'A defensive Wazuh lab running in Docker on Arch Linux to centralize events and practice integrity monitoring and configuration auditing.',
-          proof: 'FIM, active inventory, and SCA auditing'
-        }
-      ],
-      lab: "Laboratory",
-      repository: "View repository",
-      reference: "View technical base",
-      stackLabel: "Technologies used",
-      liveDemo: "Live Demo",
-      code: "Code"
-    },
-    skills: {
-      label: "02. Tech Stack",
-      title1: "Technical",
-      title2: "Skills",
-      security: "Cybersecurity",
-      networking: "Networking & Infra",
-      development: "Development",
-      cloud: "Cloud & Unix"
-    },
-    certs: {
-      label: "04. Education",
-      title1: "Collection of",
-      title2: "Certifications",
-      subtitle: "Official accreditations organized by issuing platform.",
-      documents: "Documents",
-      explore: "Explore Certificates",
-      items: {
-        coursera: {
-          name: 'Coursera',
-          desc: 'Technical cybersecurity and engineering certifications backed by Microsoft, Google, and universities.'
-        },
-        fortinet: {
-          name: 'Fortinet',
-          desc: 'Official accreditations in fundamentals and associate level of cybersecurity and networking.'
-        },
-        aws: {
-          name: 'AWS',
-          desc: 'Cloud architecture and operations certifications from Amazon Web Services.'
-        },
-        hackthebox: {
-          name: 'Hack The Box',
-          desc: 'Advanced certifications in pentesting, forensics, and red teaming operations.'
-        },
-        cwl: {
-          name: 'CWL',
-          desc: 'Specialized and technical CWL certifications.'
-        },
-        cisco: {
-          name: 'Cisco',
-          desc: 'Networking and cybersecurity certifications backed by Cisco Networking Academy.'
-        },
-        otros: {
-          name: 'Other Certificates',
-          desc: 'Miscellaneous accreditations, university diplomas, and certificates of participation.'
-        }
-      }
-    },
-    contact: {
-      label: "05. Let's Talk",
-      title1: "Get in",
-      title2: "Touch",
-      subtitle: "Let's discuss your next project or collaboration.",
-      nameLabel: "Name",
-      namePh: "Your full name",
-      emailLabel: "Email",
-      emailPh: "you@email.com",
-      msgLabel: "Message",
-      msgPh: "How can I help you?",
-      send: "Send Message",
-      sending: "Sending...",
-      success: "Message sent! I'll get back to you as soon as possible.",
-      errorDef: "Unexpected error. Please try again.",
-      errorConn: "Could not connect to the server.",
-      errorSend: "Error sending.",
-      directStart: "Prefer to email me directly?",
-      directMid: "Email me directly at"
-    },
-    stats: {
-      title: "Laboratory Statistics",
-      pwned: "Pwned Systems",
-      flags: "Flags Captured",
-      vulns: "Vulnerabilities",
-      audits: "Clean Audits"
-    },
-    services: {
-      label: "What I do",
-      title1: "Areas of",
-      title2: "Specialization",
-      subtitle: "I combine the offensive mindset of a hacker with the constructive capability of a developer to build unbreakable solutions.",
-      list: [
-        {
-          title: 'Web Auditing & Pentesting',
-          desc: 'Vulnerability analysis, penetration testing, and security flaw reporting in web applications using OWASP Top 10 and specialized tools.'
-        },
-        {
-          title: 'SecDevOps Development',
-          desc: 'Building robust full-stack applications integrating security practices from the source code, preventing SQL injections, XSS, and CSRF by default.'
-        },
-        {
-          title: 'Secure Architecture',
-          desc: 'Design and implementation of cloud infrastructures (AWS) and local networks with firewall configurations, segmentation, and strict access control.'
-        }
-      ]
-    },
-    nav: {
-      home: "Home",
-      profile: "Profile",
-      skills: "Skills",
-      certs: "Certifications",
-      projects: "Projects",
-      notes: "Notes",
-      terminal: "Terminal",
-      contact: "Contact"
-    },
-    header: {
-      online: "Online",
-      idle: "Idle",
-      dnd: "Do Not Disturb",
-      offline: "Offline"
-    },
-    footer: {
-      bio: "Security Engineer & Full Stack Developer passionate about cybersecurity, web development, and continuous learning.",
-      navigation: "Navigation",
-      contact: "Contact",
-      downloadCv: "Download CV",
-      socials: "Socials",
-      rights: "All rights reserved.",
-      backToTop: "Back to top"
-    }
-  }
+  padding: 0.72rem 0.9rem;
+  border-bottom: 1px solid #1d1d22;
+  color: #73737c;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-export function t(path: string): any {
-  const keys = path.split('.')
-  let current = dict[i18nState.lang]
-  for (const k of keys) {
-    if (current[k] === undefined) return path
-    current = current[k]
-  }
-  return current
+.mp-status-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: #5d5d66;
 }
+
+.mp-status-dot.active {
+  background: #1ed760;
+  box-shadow: 0 0 0 4px rgba(30, 215, 96, 0.1);
+}
+
+.mp-status-dot.warning {
+  background: #ff3b3b;
+  box-shadow: 0 0 0 4px rgba(255, 59, 59, 0.1);
+}
+
+.mp-hero {
+  position: relative;
+  min-height: 7.4rem;
+  overflow: hidden;
+}
+
+.mp-hero-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.mp-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(24px) saturate(0.9) brightness(0.28);
+  transform: scale(1.2);
+}
+
+.mp-hero-shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 9, 12, 0.72);
+}
+
+.mp-hero-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
+.mp-cover {
+  position: relative;
+  display: grid;
+  width: 4.4rem;
+  height: 4.4rem;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #24242b;
+  border-radius: 11px;
+  background: #111116;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.mp-cover > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp-cover > svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #1ed760;
+  opacity: 0.45;
+}
+
+.mp-bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.mp-bars span {
+  width: 3px;
+  height: 1.1rem;
+  border-radius: 2px;
+  background: #fff;
+  animation: mp-bar 900ms ease-in-out infinite;
+}
+
+.mp-bars span:nth-child(2) { animation-delay: 120ms; }
+.mp-bars span:nth-child(3) { animation-delay: 240ms; }
+.mp-bars span:nth-child(4) { animation-delay: 360ms; }
+
+.mp-copy {
+  min-width: 0;
+}
+
+.mp-copy h3,
+.mp-copy p,
+.mp-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-copy h3 {
+  margin: 0;
+  color: #f4f4f5;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.mp-copy p {
+  margin: 0.28rem 0 0;
+  color: #9a9aa3;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.mp-copy span {
+  display: block;
+  margin-top: 0.28rem;
+  color: #1db954;
+  font-size: 0.65rem;
+}
+
+.mp-progress {
+  padding: 0 1rem 0.85rem;
+}
+
+.mp-progress-track {
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #232329;
+}
+
+.mp-progress-track div {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #1ed760;
+  transform-origin: left center;
+  transition: transform 900ms linear;
+}
+
+.mp-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+  color: #55555f;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+}
+
+.mp-actions {
+  display: flex;
+  padding: 0.75rem 0.9rem 0.9rem;
+  border-top: 1px solid #1d1d22;
+}
+
+.mp-actions a,
+.mp-actions button {
+  display: inline-flex;
+  min-height: 2.4rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid #2a2a31;
+  border-radius: 9px;
+  background: #111116;
+  color: #cfcfd5;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background 180ms ease;
+}
+
+.mp-actions a:hover,
+.mp-actions button:hover:not(:disabled) {
+  border-color: rgba(255, 59, 59, 0.55);
+  background: #151519;
+  color: #fff;
+}
+
+.mp-actions a:focus-visible,
+.mp-actions button:focus-visible {
+  outline: 2px solid #ff3b3b;
+  outline-offset: 3px;
+}
+
+.mp-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.mp-actions svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.spinning {
+  animation: mp-spin 800ms linear infinite;
+}
+
+@keyframes mp-bar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+@keyframes mp-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-bars span,
+  .spinning {
+    animation: none;
+  }
+
+  .mp-progress-track div {
+    transition: none;
+  }
+}
+</style>
