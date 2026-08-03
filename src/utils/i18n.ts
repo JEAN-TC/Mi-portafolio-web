@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 const savedLang = localStorage.getItem('site_lang') as 'es' | 'en'
-const initialLang = savedLang || 'es'
+const initialLang = savedLang || 'en'
 
 export const i18nState = reactive({
   lang: initialLang,
@@ -40,14 +40,14 @@ export const dict: Record<'es' | 'en', any> = {
     hero: {
       hi: "Hola, soy",
       phrases: [
-        'practicante de ciberseguridad.',
-        'lector empedernido.',
-        'rompedor de cosas para entenderlas.',
-        'introvertido con ideas que explotan.',
+        'conecto seguridad, redes y desarrollo.',
+        'aprendo construyendo y documentando.',
+        'rompo sistemas en entornos seguros para entenderlos.',
+        'convierto curiosidad técnica en proyectos reales.',
       ],
       aboutLabel: "sobre mí",
-      aboutText1: "Soy de los que leen hasta las 2am porque encontré algo interesante. Callado en los cuartos, ruidoso en las ideas.",
-      aboutText2: "Siempre hay algo nuevo por aprender",
+      aboutText1: "Me gusta seguir una pregunta hasta el fondo: leer, probar, equivocarme y dejar documentado lo que aprendí.",
+      aboutText2: "La curiosidad se vuelve útil cuando termina en algo que funciona",
       rasgos: [
         { label: 'Investigar', desc: 'No me basta con que algo funcione. Necesito saber por qué funciona, y qué pasa si lo rompo.' },
         { label: 'Noche', desc: 'Funciono mejor de noche. El silencio ayuda a pensar sin interrupciones.' },
@@ -85,25 +85,37 @@ export const dict: Record<'es' | 'en', any> = {
       label: "03. Portafolio",
       title1: "Trabajos",
       title2: "Destacados",
-      subtitle: "Selección de mis proyectos recientes más importantes con interfaces avanzadas e interactivas.",
+      subtitle: "Proyectos construidos y laboratorios documentados que muestran cómo pienso, implemento y verifico soluciones de seguridad y desarrollo.",
       list: [
         {
           title: 'Monitor de Integridad de Archivos (FIM)',
-          desc: 'Sistema de File Integrity Monitoring que detecta cambios no autorizados en archivos y los presenta en un dashboard web interactivo en tiempo real.'
+          focus: 'Seguridad defensiva',
+          desc: 'Construí un monitor que detecta cambios no autorizados y los presenta en un panel web para revisar eventos sin perder contexto.',
+          proof: 'Detección de cambios y visualización en tiempo real'
         },
         {
           title: 'Administrador de Tareas',
-          desc: 'Sistema completo de administración de tareas para usuarios. Permite crear, organizar y gestionar tareas con una interfaz moderna e intuitiva.'
+          focus: 'Aplicación full-stack',
+          desc: 'Desarrollé una aplicación para crear, organizar y dar seguimiento a tareas, cuidando tanto el flujo del usuario como la estructura técnica.',
+          proof: 'Flujo CRUD completo con interfaz responsive'
         },
         {
           title: 'Web-Vul',
-          desc: 'Proyecto de prácticas web enfocado en seguridad y vulnerabilidades. Incluye análisis de vulnerabilidades y técnicas de desarrollo seguro.'
+          focus: 'Seguridad web',
+          desc: 'Laboratorio web creado para practicar análisis de vulnerabilidades, entender su impacto y reforzar hábitos de desarrollo seguro.',
+          proof: 'Escenarios controlados de análisis y mitigación'
         },
         {
           title: 'Wazuh SIEM/XDR',
-          desc: 'Implementación all-in-one de Wazuh v4.14.6 usando contenedores Docker en un host Arch Linux. Centralización de eventos, análisis FIM, monitoreo de integridad, inventario activo y auditoría SCA.'
+          focus: 'Laboratorio SOC',
+          desc: 'Laboratorio defensivo con Wazuh en Docker sobre Arch Linux para centralizar eventos y practicar monitoreo de integridad y auditoría de configuración.',
+          proof: 'FIM, inventario activo y auditoría SCA'
         }
       ],
+      lab: "Laboratorio",
+      repository: "Ver repositorio",
+      reference: "Ver base técnica",
+      stackLabel: "Tecnologías utilizadas",
       liveDemo: "Demo en Vivo",
       code: "Código"
     },
@@ -120,13 +132,13 @@ export const dict: Record<'es' | 'en', any> = {
       label: "04. Educación",
       title1: "Colección de",
       title2: "Certificaciones",
-      subtitle: "Credenciales y formación verificable, organizadas por plataforma emisora.",
+      subtitle: "Acreditaciones oficiales organizadas por plataforma emisora.",
       documents: "Documentos",
       explore: "Explorar Certificados",
       items: {
         coursera: {
           name: 'Coursera',
-          desc: 'Cursos y certificados técnicos de ciberseguridad impartidos por Microsoft, Google, IBM y otras instituciones.'
+          desc: 'Certificaciones técnicas de ciberseguridad e ingeniería avaladas por Microsoft, Google y universidades.'
         },
         fortinet: {
           name: 'Fortinet',
@@ -134,11 +146,11 @@ export const dict: Record<'es' | 'en', any> = {
         },
         aws: {
           name: 'AWS',
-          desc: 'Formación en fundamentos, arquitectura y operaciones en la nube de Amazon Web Services.'
+          desc: 'Certificaciones de arquitectura y operaciones en la nube de Amazon Web Services.'
         },
         hackthebox: {
           name: 'Hack The Box',
-          desc: 'Laboratorios prácticos y progreso técnico en pentesting, sistemas y seguridad ofensiva.'
+          desc: 'Certificaciones avanzadas en pentesting, análisis forense y operaciones de red teaming.'
         },
         cwl: {
           name: 'CWL',
@@ -185,19 +197,19 @@ export const dict: Record<'es' | 'en', any> = {
       label: "Lo que hago",
       title1: "Áreas de",
       title2: "Especialización",
-      subtitle: "Combino curiosidad ofensiva, monitoreo defensivo y desarrollo para construir soluciones más seguras y comprensibles.",
+      subtitle: "Combino la mentalidad ofensiva de un hacker con la capacidad constructiva de un desarrollador para crear soluciones inquebrantables.",
       list: [
         {
           title: 'Auditoría Web & Pentesting',
-          desc: 'Práctica de análisis de vulnerabilidades y seguridad web en laboratorios controlados, utilizando OWASP Top 10 y herramientas especializadas.'
+          desc: 'Análisis de vulnerabilidades, pruebas de penetración y reporte de fallos de seguridad en aplicaciones web utilizando OWASP Top 10 y herramientas especializadas.'
         },
         {
           title: 'Desarrollo SecDevOps',
-          desc: 'Desarrollo de aplicaciones full-stack aplicando validación, control de acceso y buenas prácticas de seguridad desde el código.'
+          desc: 'Construcción de aplicaciones full-stack robustas integrando prácticas de seguridad desde el código fuente, previniendo inyecciones SQL, XSS y CSRF por defecto.'
         },
         {
           title: 'Arquitectura Segura',
-          desc: 'Laboratorios de Linux, redes, Docker y nube orientados a monitoreo, segmentación y control de accesos.'
+          desc: 'Diseño e implementación de infraestructuras en la nube (AWS) y redes locales con configuraciones de firewalls, segmentación y control de accesos estrictos.'
         }
       ]
     },
@@ -218,7 +230,7 @@ export const dict: Record<'es' | 'en', any> = {
       offline: "Desconectado"
     },
     footer: {
-      bio: "Estudiante de Ciberseguridad con proyectos prácticos en SOC, Linux, redes y desarrollo web seguro.",
+      bio: "Security Engineer & Full Stack Developer apasionado por la ciberseguridad, el desarrollo web y el aprendizaje continuo.",
       navigation: "Navegación",
       contact: "Contacto",
       downloadCv: "Descargar CV",
@@ -249,14 +261,14 @@ export const dict: Record<'es' | 'en', any> = {
     hero: {
       hi: "Hi, I'm",
       phrases: [
-        'cybersecurity practitioner.',
-        'avid reader.',
-        'breaker of things to understand them.',
-        'introvert with explosive ideas.',
+        'I connect security, networks, and development.',
+        'I learn by building and documenting.',
+        'I break systems safely to understand them.',
+        'I turn technical curiosity into real projects.',
       ],
       aboutLabel: "about me",
-      aboutText1: "I'm the kind of person who reads until 2am because I found something interesting. Quiet in rooms, loud in ideas.",
-      aboutText2: "There's always something new to learn",
+      aboutText1: "I like following a question all the way through: reading, testing, getting things wrong, and documenting what I learned.",
+      aboutText2: "Curiosity becomes useful when it ends in something that works",
       rasgos: [
         { label: 'Investigate', desc: "It's not enough for something to work. I need to know why it works, and what happens if I break it." },
         { label: 'Night Owl', desc: 'I function better at night. Silence helps me think without interruptions.' },
@@ -294,25 +306,37 @@ export const dict: Record<'es' | 'en', any> = {
       label: "03. Portfolio",
       title1: "Featured",
       title2: "Works",
-      subtitle: "A selection of my most important recent projects with advanced and interactive interfaces.",
+      subtitle: "Built projects and documented labs that show how I think, implement, and verify security and development solutions.",
       list: [
         {
           title: 'File Integrity Monitor (FIM)',
-          desc: 'File Integrity Monitoring system that detects unauthorized changes to files and presents them in a real-time interactive web dashboard.'
+          focus: 'Defensive security',
+          desc: 'I built a monitor that detects unauthorized changes and presents them in a web dashboard so events can be reviewed without losing context.',
+          proof: 'Change detection and real-time visualization'
         },
         {
           title: 'Task Manager',
-          desc: 'Complete task management system for users. Allows creating, organizing, and managing tasks with a modern and intuitive interface.'
+          focus: 'Full-stack application',
+          desc: 'I developed an application to create, organize, and track tasks while caring for both the user flow and the technical structure.',
+          proof: 'Complete CRUD flow with a responsive interface'
         },
         {
           title: 'Web-Vul',
-          desc: 'Web practice project focused on security and vulnerabilities. Includes vulnerability analysis and secure development techniques.'
+          focus: 'Web security',
+          desc: 'A web lab created to practice vulnerability analysis, understand impact, and strengthen secure development habits.',
+          proof: 'Controlled analysis and mitigation scenarios'
         },
         {
           title: 'Wazuh SIEM/XDR',
-          desc: 'All-in-one implementation of Wazuh v4.14.6 using Docker containers on an Arch Linux host. Event centralization, FIM analysis, integrity monitoring, active inventory, and SCA auditing.'
+          focus: 'SOC laboratory',
+          desc: 'A defensive Wazuh lab running in Docker on Arch Linux to centralize events and practice integrity monitoring and configuration auditing.',
+          proof: 'FIM, active inventory, and SCA auditing'
         }
       ],
+      lab: "Laboratory",
+      repository: "View repository",
+      reference: "View technical base",
+      stackLabel: "Technologies used",
       liveDemo: "Live Demo",
       code: "Code"
     },
@@ -329,13 +353,13 @@ export const dict: Record<'es' | 'en', any> = {
       label: "04. Education",
       title1: "Collection of",
       title2: "Certifications",
-      subtitle: "Verifiable credentials and training, organized by issuing platform.",
+      subtitle: "Official accreditations organized by issuing platform.",
       documents: "Documents",
       explore: "Explore Certificates",
       items: {
         coursera: {
           name: 'Coursera',
-          desc: 'Cybersecurity courses and technical certificates delivered by Microsoft, Google, IBM, and other institutions.'
+          desc: 'Technical cybersecurity and engineering certifications backed by Microsoft, Google, and universities.'
         },
         fortinet: {
           name: 'Fortinet',
@@ -343,11 +367,11 @@ export const dict: Record<'es' | 'en', any> = {
         },
         aws: {
           name: 'AWS',
-          desc: 'Training in cloud fundamentals, architecture, and operations from Amazon Web Services.'
+          desc: 'Cloud architecture and operations certifications from Amazon Web Services.'
         },
         hackthebox: {
           name: 'Hack The Box',
-          desc: 'Hands-on labs and technical progress in pentesting, systems, and offensive security.'
+          desc: 'Advanced certifications in pentesting, forensics, and red teaming operations.'
         },
         cwl: {
           name: 'CWL',
@@ -394,19 +418,19 @@ export const dict: Record<'es' | 'en', any> = {
       label: "What I do",
       title1: "Areas of",
       title2: "Specialization",
-      subtitle: "I combine offensive curiosity, defensive monitoring, and development to build safer, easier-to-understand solutions.",
+      subtitle: "I combine the offensive mindset of a hacker with the constructive capability of a developer to build unbreakable solutions.",
       list: [
         {
           title: 'Web Auditing & Pentesting',
-          desc: 'Vulnerability analysis and web security practice in controlled labs using OWASP Top 10 and specialized tools.'
+          desc: 'Vulnerability analysis, penetration testing, and security flaw reporting in web applications using OWASP Top 10 and specialized tools.'
         },
         {
           title: 'SecDevOps Development',
-          desc: 'Full-stack development applying validation, access control, and security practices from the source code.'
+          desc: 'Building robust full-stack applications integrating security practices from the source code, preventing SQL injections, XSS, and CSRF by default.'
         },
         {
           title: 'Secure Architecture',
-          desc: 'Linux, networking, Docker, and cloud labs focused on monitoring, segmentation, and access control.'
+          desc: 'Design and implementation of cloud infrastructures (AWS) and local networks with firewall configurations, segmentation, and strict access control.'
         }
       ]
     },
@@ -427,7 +451,7 @@ export const dict: Record<'es' | 'en', any> = {
       offline: "Offline"
     },
     footer: {
-      bio: "Cybersecurity student building practical projects in SOC, Linux, networking, and secure web development.",
+      bio: "Security Engineer & Full Stack Developer passionate about cybersecurity, web development, and continuous learning.",
       navigation: "Navigation",
       contact: "Contact",
       downloadCv: "Download CV",
