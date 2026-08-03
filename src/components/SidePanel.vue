@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { ChevronRight, ExternalLink, Download, Copy, Check, Settings } from '@lucide/vue'
+import { ChevronRight, ExternalLink, Download, Copy, Check, Settings, TerminalSquare } from '@lucide/vue'
 import { i18nState, t } from '../utils/i18n'
 import MusicPlayer from './MusicPlayer.vue'
 
@@ -36,18 +36,18 @@ function downloadCv() {
 
 <template>
   <!-- TAB TOGGLE -->
-  <div class="side-tab" :class="{ open: isOpen }" @click="toggle" aria-label="Abrir panel lateral">
+  <button type="button" class="side-tab" :class="{ open: isOpen }" @click="toggle" :aria-expanded="isOpen" aria-controls="command-center" aria-label="Abrir centro de comandos">
     <ChevronRight class="tab-icon" :class="{ rotated: isOpen }" />
-  </div>
+  </button>
 
   <!-- DRAWER -->
   <transition name="drawer">
-    <aside v-if="isOpen" class="side-drawer">
+    <aside id="command-center" v-if="isOpen" class="side-drawer" aria-label="Centro de comandos">
 
       <!-- Header -->
       <div class="drawer-header">
         <span class="drawer-title">{{ t('sidePanel.title') }}</span>
-        <button class="drawer-close" @click="toggle">✕</button>
+        <button type="button" class="drawer-close" @click="toggle" aria-label="Cerrar centro de comandos">✕</button>
       </div>
 
 
@@ -94,15 +94,15 @@ function downloadCv() {
           <ExternalLink class="section-icon" /> {{ t('sidePanel.findMe') }}
         </div>
         <div class="links-list">
-          <a href="https://github.com/JEAN-TC" target="_blank" class="social-link">
+          <a href="https://github.com/JEAN-TC" target="_blank" rel="noopener noreferrer" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">gh/</span> GitHub
           </a>
-          <a href="https://www.linkedin.com/in/jean-toscano-875894372/" target="_blank" class="social-link">
+          <a href="https://www.linkedin.com/in/jean-toscano-875894372/" target="_blank" rel="noopener noreferrer" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">in/</span> LinkedIn
           </a>
-          <a href="https://profile.hackthebox.com/profile/019d3170-9d9c-72b2-bd70-f9403a567b37" target="_blank" class="social-link">
+          <a href="https://profile.hackthebox.com/profile/019d3170-9d9c-72b2-bd70-f9403a567b37" target="_blank" rel="noopener noreferrer" class="social-link">
             <ExternalLink class="social-icon" />
             <span class="social-label">htb/</span> HackTheBox
           </a>
@@ -136,6 +136,7 @@ function downloadCv() {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0;
   transition: background 0.3s, border-color 0.3s, width 0.3s;
 }
 .side-tab:hover, .side-tab.open {
