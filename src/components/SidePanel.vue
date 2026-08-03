@@ -27,7 +27,7 @@ function copyEmail() {
 
 function downloadCv() {
   const link = document.createElement('a')
-  link.href = '/CV_Jean_Toscano.pdf'
+  link.href = '/.netlify/functions/cv'
   link.download = 'CV_Jean_Toscano.pdf'
   link.target = '_blank'
   link.click()
