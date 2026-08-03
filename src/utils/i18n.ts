@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
 const savedLang = localStorage.getItem('site_lang') as 'es' | 'en'
-const initialLang = savedLang || 'en'
+const initialLang = savedLang || 'es'
 
 export const i18nState = reactive({
   lang: initialLang,
@@ -120,13 +120,13 @@ export const dict: Record<'es' | 'en', any> = {
       label: "04. Educación",
       title1: "Colección de",
       title2: "Certificaciones",
-      subtitle: "Acreditaciones oficiales organizadas por plataforma emisora.",
+      subtitle: "Credenciales y formación verificable, organizadas por plataforma emisora.",
       documents: "Documentos",
       explore: "Explorar Certificados",
       items: {
         coursera: {
           name: 'Coursera',
-          desc: 'Certificaciones técnicas de ciberseguridad e ingeniería avaladas por Microsoft, Google y universidades.'
+          desc: 'Cursos y certificados técnicos de ciberseguridad impartidos por Microsoft, Google, IBM y otras instituciones.'
         },
         fortinet: {
           name: 'Fortinet',
@@ -134,11 +134,11 @@ export const dict: Record<'es' | 'en', any> = {
         },
         aws: {
           name: 'AWS',
-          desc: 'Certificaciones de arquitectura y operaciones en la nube de Amazon Web Services.'
+          desc: 'Formación en fundamentos, arquitectura y operaciones en la nube de Amazon Web Services.'
         },
         hackthebox: {
           name: 'Hack The Box',
-          desc: 'Certificaciones avanzadas en pentesting, análisis forense y operaciones de red teaming.'
+          desc: 'Laboratorios prácticos y progreso técnico en pentesting, sistemas y seguridad ofensiva.'
         },
         cwl: {
           name: 'CWL',
@@ -185,19 +185,19 @@ export const dict: Record<'es' | 'en', any> = {
       label: "Lo que hago",
       title1: "Áreas de",
       title2: "Especialización",
-      subtitle: "Combino la mentalidad ofensiva de un hacker con la capacidad constructiva de un desarrollador para crear soluciones inquebrantables.",
+      subtitle: "Combino curiosidad ofensiva, monitoreo defensivo y desarrollo para construir soluciones más seguras y comprensibles.",
       list: [
         {
           title: 'Auditoría Web & Pentesting',
-          desc: 'Análisis de vulnerabilidades, pruebas de penetración y reporte de fallos de seguridad en aplicaciones web utilizando OWASP Top 10 y herramientas especializadas.'
+          desc: 'Práctica de análisis de vulnerabilidades y seguridad web en laboratorios controlados, utilizando OWASP Top 10 y herramientas especializadas.'
         },
         {
           title: 'Desarrollo SecDevOps',
-          desc: 'Construcción de aplicaciones full-stack robustas integrando prácticas de seguridad desde el código fuente, previniendo inyecciones SQL, XSS y CSRF por defecto.'
+          desc: 'Desarrollo de aplicaciones full-stack aplicando validación, control de acceso y buenas prácticas de seguridad desde el código.'
         },
         {
           title: 'Arquitectura Segura',
-          desc: 'Diseño e implementación de infraestructuras en la nube (AWS) y redes locales con configuraciones de firewalls, segmentación y control de accesos estrictos.'
+          desc: 'Laboratorios de Linux, redes, Docker y nube orientados a monitoreo, segmentación y control de accesos.'
         }
       ]
     },
@@ -218,7 +218,7 @@ export const dict: Record<'es' | 'en', any> = {
       offline: "Desconectado"
     },
     footer: {
-      bio: "Security Engineer & Full Stack Developer apasionado por la ciberseguridad, el desarrollo web y el aprendizaje continuo.",
+      bio: "Estudiante de Ciberseguridad con proyectos prácticos en SOC, Linux, redes y desarrollo web seguro.",
       navigation: "Navegación",
       contact: "Contacto",
       downloadCv: "Descargar CV",
@@ -329,13 +329,13 @@ export const dict: Record<'es' | 'en', any> = {
       label: "04. Education",
       title1: "Collection of",
       title2: "Certifications",
-      subtitle: "Official accreditations organized by issuing platform.",
+      subtitle: "Verifiable credentials and training, organized by issuing platform.",
       documents: "Documents",
       explore: "Explore Certificates",
       items: {
         coursera: {
           name: 'Coursera',
-          desc: 'Technical cybersecurity and engineering certifications backed by Microsoft, Google, and universities.'
+          desc: 'Cybersecurity courses and technical certificates delivered by Microsoft, Google, IBM, and other institutions.'
         },
         fortinet: {
           name: 'Fortinet',
@@ -343,11 +343,11 @@ export const dict: Record<'es' | 'en', any> = {
         },
         aws: {
           name: 'AWS',
-          desc: 'Cloud architecture and operations certifications from Amazon Web Services.'
+          desc: 'Training in cloud fundamentals, architecture, and operations from Amazon Web Services.'
         },
         hackthebox: {
           name: 'Hack The Box',
-          desc: 'Advanced certifications in pentesting, forensics, and red teaming operations.'
+          desc: 'Hands-on labs and technical progress in pentesting, systems, and offensive security.'
         },
         cwl: {
           name: 'CWL',
@@ -394,19 +394,19 @@ export const dict: Record<'es' | 'en', any> = {
       label: "What I do",
       title1: "Areas of",
       title2: "Specialization",
-      subtitle: "I combine the offensive mindset of a hacker with the constructive capability of a developer to build unbreakable solutions.",
+      subtitle: "I combine offensive curiosity, defensive monitoring, and development to build safer, easier-to-understand solutions.",
       list: [
         {
           title: 'Web Auditing & Pentesting',
-          desc: 'Vulnerability analysis, penetration testing, and security flaw reporting in web applications using OWASP Top 10 and specialized tools.'
+          desc: 'Vulnerability analysis and web security practice in controlled labs using OWASP Top 10 and specialized tools.'
         },
         {
           title: 'SecDevOps Development',
-          desc: 'Building robust full-stack applications integrating security practices from the source code, preventing SQL injections, XSS, and CSRF by default.'
+          desc: 'Full-stack development applying validation, access control, and security practices from the source code.'
         },
         {
           title: 'Secure Architecture',
-          desc: 'Design and implementation of cloud infrastructures (AWS) and local networks with firewall configurations, segmentation, and strict access control.'
+          desc: 'Linux, networking, Docker, and cloud labs focused on monitoring, segmentation, and access control.'
         }
       ]
     },
@@ -427,7 +427,7 @@ export const dict: Record<'es' | 'en', any> = {
       offline: "Offline"
     },
     footer: {
-      bio: "Security Engineer & Full Stack Developer passionate about cybersecurity, web development, and continuous learning.",
+      bio: "Cybersecurity student building practical projects in SOC, Linux, networking, and secure web development.",
       navigation: "Navigation",
       contact: "Contact",
       downloadCv: "Download CV",
