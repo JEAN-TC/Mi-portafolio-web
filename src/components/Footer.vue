@@ -72,7 +72,7 @@ const navLinks = computed(() => [
           </li>
         </ul>
         <!-- CV Download -->
-        <a href="/CV_Jean_Toscano.pdf" target="_blank" rel="noopener noreferrer" class="ft-cv-btn">
+        <a href="/.netlify/functions/cv" target="_blank" rel="noopener noreferrer" class="ft-cv-btn">
           <FileDown class="ft-cv-icon" />
           <span>{{ t('footer.downloadCv') }}</span>
         </a>
