@@ -285,7 +285,7 @@ onUnmounted(() => {
   border: 1px solid #232329;
   border-radius: 14px;
   background: #09090c;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-body);
 }
 
 .mp-status-line {
