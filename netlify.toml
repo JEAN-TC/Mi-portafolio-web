@@ -8,18 +8,6 @@
   status = 200
   force = true
 
-[[redirects]]
-  from = "/api/spotify/*"
-  to = "/.netlify/functions/spotify"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/spotify"
-  to = "/.netlify/functions/spotify"
-  status = 200
-  force = true
-
 # Proxy para la API de contacto directamente a Google Apps Script
 [[redirects]]
   from = "/api/contact"
