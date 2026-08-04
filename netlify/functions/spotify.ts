@@ -28,6 +28,14 @@ const describeSpotifyFailure = async (response: Response): Promise<SpotifyFailur
   const payload = await readJson(response);
   const spotifyMessage = payload?.error?.message || payload?.error_description || '';
 
+  if (spotifyMessage.toLowerCase().includes('invalid client')) {
+    return {
+      code: 'spotify_client_invalid',
+      message: 'Spotify rechazó el Client ID o Client Secret. Actualiza las credenciales de esta app en Netlify.',
+      spotifyStatus: response.status
+    };
+  }
+
   if (response.status === 401) {
     return {
       code: 'spotify_authorization_expired',
@@ -48,14 +56,6 @@ const describeSpotifyFailure = async (response: Response): Promise<SpotifyFailur
     return {
       code: 'spotify_rate_limited',
       message: 'Spotify limitó temporalmente las consultas. Vuelve a intentarlo en unos minutos.',
-      spotifyStatus: response.status
-    };
-  }
-
-  if (spotifyMessage.toLowerCase().includes('invalid client')) {
-    return {
-      code: 'spotify_client_invalid',
-      message: 'Spotify rechazó el Client ID o Client Secret. Actualiza las credenciales de esta app en Netlify.',
       spotifyStatus: response.status
     };
   }
