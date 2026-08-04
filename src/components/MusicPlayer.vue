@@ -254,6 +254,16 @@ onUnmounted(() => {
         {{ errorCode === 'spotify_authorization_expired' ? 'Reconectar Spotify' : 'Iniciar sesión con Spotify' }}
       </a>
 
+      <a
+        v-else-if="errorCode === 'spotify_client_invalid'"
+        href="https://developer.spotify.com/dashboard"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Revisar credenciales
+        <ExternalLink aria-hidden="true" />
+      </a>
+
       <button
         v-else
         type="button"
