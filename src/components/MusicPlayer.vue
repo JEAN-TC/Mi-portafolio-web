@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { ExternalLink, RefreshCw } from '@lucide/vue'
+import { ExternalLink, LogIn, RefreshCw } from '@lucide/vue'
 
 type SpotifyArtist = {
   name: string
@@ -36,6 +36,7 @@ type SpotifyResponse = {
 }
 
 const MUSIC_API = '/api/music'
+const SPOTIFY_AUTH_URL = '/api/spotify/login'
 const spotifyPlaying = ref<SpotifyTrack | null>(null)
 const playerState = ref<PlayerState>('loading')
 const progressMs = ref(0)
@@ -65,13 +66,18 @@ const coverUrl = computed(() => spotifyPlaying.value?.album?.images?.[0]?.url ||
 const artistNames = computed(() =>
   spotifyPlaying.value?.artists?.map(artist => artist.name).join(', ') || ''
 )
+const needsAuthorization = computed(() =>
+  errorCode.value === 'spotify_access_restricted' ||
+  errorCode.value === 'spotify_authorization_expired'
+)
 
 const statusTitle = computed(() => {
   if (playerState.value === 'loading') return 'Consultando Spotify…'
   if (playerState.value === 'playing') return spotifyPlaying.value?.name || 'En reproducción'
   if (playerState.value === 'idle') return 'Spotify está en pausa'
-  if (errorCode.value === 'spotify_access_restricted') return 'Spotify necesita Premium'
+  if (errorCode.value === 'spotify_access_restricted') return 'Conecta tu Spotify'
   if (errorCode.value === 'spotify_authorization_expired') return 'Autorización vencida'
+  if (errorCode.value === 'spotify_client_invalid') return 'Credenciales de Spotify inválidas'
   if (errorCode.value === 'spotify_rate_limited') return 'Spotify está tomando un respiro'
   return 'Spotify no está disponible'
 })
@@ -238,6 +244,14 @@ onUnmounted(() => {
       >
         Abrir en Spotify
         <ExternalLink aria-hidden="true" />
+      </a>
+
+      <a
+        v-else-if="needsAuthorization"
+        :href="SPOTIFY_AUTH_URL"
+      >
+        <LogIn aria-hidden="true" />
+        {{ errorCode === 'spotify_authorization_expired' ? 'Reconectar Spotify' : 'Iniciar sesión con Spotify' }}
       </a>
 
       <button
