@@ -52,6 +52,14 @@ const describeSpotifyFailure = async (response: Response): Promise<SpotifyFailur
     };
   }
 
+  if (spotifyMessage.toLowerCase().includes('invalid client')) {
+    return {
+      code: 'spotify_client_invalid',
+      message: 'Spotify rechazó el Client ID o Client Secret. Actualiza las credenciales de esta app en Netlify.',
+      spotifyStatus: response.status
+    };
+  }
+
   return {
     code: 'spotify_unavailable',
     message: spotifyMessage || 'Spotify no respondió correctamente.',
