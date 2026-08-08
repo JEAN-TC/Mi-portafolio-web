@@ -60,6 +60,13 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
+
+/* Keep route content visible if the animation library has not initialized yet. */
+body:not(.aos-ready) [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* ==============================
    Typography & Utilities
    ============================== */
