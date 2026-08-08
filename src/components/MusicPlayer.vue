@@ -179,43 +179,42 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="mp-panel" aria-label="Actividad de Spotify">
-    <div class="mp-status-line">
-      <span
-        class="mp-status-dot"
-        :class="{ active: playerState === 'playing', warning: playerState === 'unavailable' }"
-        aria-hidden="true"
-      ></span>
-      <span>{{ playerState === 'playing' ? 'Escuchando ahora' : 'Actividad de Spotify' }}</span>
+  <section
+    class="mp-panel"
+    :class="{ 'is-playing': playerState === 'playing', 'is-unavailable': playerState === 'unavailable' }"
+    aria-label="Actividad de Spotify"
+  >
+    <div class="mp-topline">
+      <div class="mp-status">
+        <span
+          class="mp-status-dot"
+          :class="{ active: playerState === 'playing', warning: playerState === 'unavailable' }"
+          aria-hidden="true"
+        ></span>
+        <span>{{ playerState === 'playing' ? 'Escuchando ahora' : 'Actividad de Spotify' }}</span>
+      </div>
+      <span class="mp-brand">Spotify</span>
     </div>
 
-    <div class="mp-hero" aria-live="polite">
-      <div v-if="coverUrl" class="mp-hero-bg" aria-hidden="true">
-        <img :src="coverUrl" alt="" />
+    <div class="mp-stage" aria-live="polite">
+      <div class="mp-cover">
+        <img
+          v-if="coverUrl"
+          :src="coverUrl"
+          :alt="'Portada de ' + (spotifyPlaying?.name || 'la canción')"
+        />
+        <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32z"/>
+        </svg>
+        <div v-if="playerState === 'playing'" class="mp-bars" aria-hidden="true">
+          <span v-for="bar in 4" :key="bar"></span>
+        </div>
       </div>
-      <div class="mp-hero-shade" aria-hidden="true"></div>
 
-      <div class="mp-hero-content">
-        <div class="mp-cover">
-          <img
-            v-if="coverUrl"
-            :src="coverUrl"
-            :alt="'Portada de ' + (spotifyPlaying?.name || 'la canción')"
-          />
-          <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.22.36-.68.48-1.04.26-2.9-1.77-6.55-2.17-10.85-1.19-.4.1-.82-.15-.92-.55-.1-.4.15-.82.55-.92 4.7-1.07 8.73-.62 12 1.38.36.22.48.68.26 1.02zm1.46-3.26c-.28.45-.87.6-1.32.32-3.32-2.04-8.38-2.63-12.3-1.44-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18-.15-.5.13-1.03.63-1.18 4.47-1.36 10.05-.7 13.85 1.63.45.28.6.87.32 1.32z"/>
-          </svg>
-
-          <div v-if="playerState === 'playing'" class="mp-bars" aria-hidden="true">
-            <span v-for="bar in 4" :key="bar"></span>
-          </div>
-        </div>
-
-        <div class="mp-copy">
-          <h3>{{ statusTitle }}</h3>
-          <p>{{ statusDetail }}</p>
-          <span v-if="spotifyPlaying?.album?.name">{{ spotifyPlaying.album.name }}</span>
-        </div>
+      <div class="mp-copy">
+        <h3>{{ statusTitle }}</h3>
+        <p>{{ statusDetail }}</p>
+        <span v-if="spotifyPlaying?.album?.name">{{ spotifyPlaying.album.name }}</span>
       </div>
     </div>
 
@@ -232,11 +231,12 @@ onUnmounted(() => {
     <div class="mp-actions">
       <a
         v-if="spotifyPlaying?.external_url"
+        class="mp-open-link"
         :href="spotifyPlaying.external_url"
         target="_blank"
         rel="noopener noreferrer"
       >
-        Abrir en Spotify
+        Escuchar en Spotify
         <ExternalLink aria-hidden="true" />
       </a>
 
@@ -247,7 +247,7 @@ onUnmounted(() => {
         @click="pollSpotifyStatus"
       >
         <RefreshCw :class="{ spinning: isRefreshing }" aria-hidden="true" />
-        {{ isRefreshing ? 'Consultando…' : 'Reintentar' }}
+        {{ isRefreshing ? 'Actualizando…' : 'Actualizar' }}
       </button>
     </div>
   </section>
@@ -255,91 +255,101 @@ onUnmounted(() => {
 
 <style scoped>
 .mp-panel {
+  --mp-surface: #0c0c10;
+  --mp-line: rgba(255, 255, 255, 0.1);
   width: 100%;
   margin-top: 1rem;
   overflow: hidden;
-  border: 1px solid #232329;
-  border-radius: 14px;
-  background: #09090c;
-  font-family: 'Inter', sans-serif;
+  border: 1px solid var(--mp-line);
+  border-radius: 16px;
+  background: var(--mp-surface);
+  color: #f8f8fa;
+  font-family: var(--font-body);
+  transition: border-color 220ms ease, box-shadow 220ms ease;
 }
 
-.mp-status-line {
+.mp-panel.is-playing {
+  border-color: rgba(30, 215, 96, 0.28);
+  box-shadow: 0 18px 36px -30px rgba(30, 215, 96, 0.65);
+}
+
+.mp-topline {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.72rem 0.9rem;
-  border-bottom: 1px solid #1d1d22;
-  color: #73737c;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
-  font-weight: 650;
-  letter-spacing: 0.08em;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.82rem 0.95rem 0.7rem;
+  color: #b7b7c1;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+.mp-status {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.48rem;
+}
+
 .mp-status-dot {
-  width: 0.42rem;
-  height: 0.42rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
   border-radius: 50%;
-  background: #5d5d66;
+  background: #696974;
 }
 
 .mp-status-dot.active {
   background: #1ed760;
-  box-shadow: 0 0 0 4px rgba(30, 215, 96, 0.1);
+  box-shadow: 0 0 0 4px rgba(30, 215, 96, 0.12);
+  animation: mp-pulse 2.4s ease-in-out infinite;
 }
 
 .mp-status-dot.warning {
-  background: #ff3b3b;
-  box-shadow: 0 0 0 4px rgba(255, 59, 59, 0.1);
+  background: #ff4d4d;
 }
 
-.mp-hero {
-  position: relative;
-  min-height: 7.4rem;
-  overflow: hidden;
+.mp-brand {
+  color: #7f7f8a;
+  font-size: 0.61rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
-.mp-hero-bg {
-  position: absolute;
-  inset: 0;
-}
-
-.mp-hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(24px) saturate(0.9) brightness(0.28);
-  transform: scale(1.2);
-}
-
-.mp-hero-shade {
-  position: absolute;
-  inset: 0;
-  background: rgba(9, 9, 12, 0.72);
-}
-
-.mp-hero-content {
+.mp-stage {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 1rem;
+  gap: 0.85rem;
+  padding: 0.35rem 0.95rem 0.95rem;
+}
+
+.mp-stage::before {
+  position: absolute;
+  top: -3rem;
+  right: -2rem;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.075);
+  content: '';
+  filter: blur(20px);
+  pointer-events: none;
 }
 
 .mp-cover {
   position: relative;
   display: grid;
-  width: 4.4rem;
-  height: 4.4rem;
+  width: 4.25rem;
+  height: 4.25rem;
   flex: 0 0 auto;
   place-items: center;
   overflow: hidden;
-  border: 1px solid #24242b;
-  border-radius: 11px;
-  background: #111116;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  background: #15151b;
+  box-shadow: 0 12px 24px -14px rgba(0, 0, 0, 0.9);
 }
 
 .mp-cover > img {
@@ -349,77 +359,84 @@ onUnmounted(() => {
 }
 
 .mp-cover > svg {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.65rem;
+  height: 1.65rem;
   color: #1ed760;
-  opacity: 0.45;
+  opacity: 0.75;
 }
 
 .mp-bars {
   position: absolute;
-  inset: 0;
+  right: 0.42rem;
+  bottom: 0.38rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: end;
   gap: 2px;
-  background: rgba(0, 0, 0, 0.48);
+  height: 0.9rem;
 }
 
 .mp-bars span {
-  width: 3px;
-  height: 1.1rem;
-  border-radius: 2px;
+  width: 2px;
+  height: 0.48rem;
+  border-radius: 999px;
   background: #fff;
-  animation: mp-bar 900ms ease-in-out infinite;
+  animation: mp-bar 840ms ease-in-out infinite;
 }
 
-.mp-bars span:nth-child(2) { animation-delay: 120ms; }
-.mp-bars span:nth-child(3) { animation-delay: 240ms; }
-.mp-bars span:nth-child(4) { animation-delay: 360ms; }
+.mp-bars span:nth-child(2) { height: 0.9rem; animation-delay: 100ms; }
+.mp-bars span:nth-child(3) { height: 0.62rem; animation-delay: 200ms; }
+.mp-bars span:nth-child(4) { height: 0.78rem; animation-delay: 300ms; }
 
 .mp-copy {
+  position: relative;
   min-width: 0;
+  flex: 1;
 }
 
-.mp-copy h3,
-.mp-copy p,
-.mp-copy span {
+.mp-copy h3 {
   overflow: hidden;
+  margin: 0;
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mp-copy h3 {
-  margin: 0;
-  color: #f4f4f5;
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.35;
-}
-
 .mp-copy p {
+  display: -webkit-box;
   margin: 0.28rem 0 0;
-  color: #9a9aa3;
-  font-size: 0.72rem;
-  line-height: 1.4;
+  overflow: hidden;
+  color: #c7c7d0;
+  font-size: 0.73rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .mp-copy span {
   display: block;
-  margin-top: 0.28rem;
-  color: #1db954;
+  overflow: hidden;
+  margin-top: 0.3rem;
+  color: #1ed760;
   font-size: 0.65rem;
+  font-weight: 650;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mp-progress {
-  padding: 0 1rem 0.85rem;
+  padding: 0 0.95rem 0.78rem;
 }
 
 .mp-progress-track {
-  height: 3px;
+  height: 4px;
   overflow: hidden;
   border-radius: 999px;
-  background: #232329;
+  background: #27272f;
 }
 
 .mp-progress-track div {
@@ -434,56 +451,68 @@ onUnmounted(() => {
 .mp-times {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.35rem;
-  color: #55555f;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
+  margin-top: 0.38rem;
+  color: #9b9ba5;
+  font-size: 0.61rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .mp-actions {
   display: flex;
-  padding: 0.75rem 0.9rem 0.9rem;
-  border-top: 1px solid #1d1d22;
+  gap: 0.5rem;
+  padding: 0.7rem 0.95rem 0.9rem;
+  border-top: 1px solid var(--mp-line);
 }
 
 .mp-actions a,
 .mp-actions button {
   display: inline-flex;
-  min-height: 2.4rem;
+  min-height: 2.45rem;
   width: 100%;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  border: 1px solid #2a2a31;
-  border-radius: 9px;
-  background: #111116;
-  color: #cfcfd5;
+  gap: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
   font: inherit;
-  font-size: 0.72rem;
-  font-weight: 650;
+  font-size: 0.73rem;
+  font-weight: 750;
   text-decoration: none;
-  transition:
-    border-color 180ms ease,
-    color 180ms ease,
-    background 180ms ease;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
 }
 
-.mp-actions a:hover,
+.mp-open-link {
+  background: #1ed760;
+  color: #061109;
+}
+
+.mp-open-link:hover {
+  background: #28e56a;
+  transform: translateY(-1px);
+}
+
+.mp-actions button {
+  border-color: #303039;
+  background: transparent;
+  color: #d7d7df;
+  cursor: pointer;
+}
+
 .mp-actions button:hover:not(:disabled) {
-  border-color: rgba(255, 59, 59, 0.55);
-  background: #151519;
+  border-color: rgba(255, 61, 61, 0.65);
+  background: rgba(255, 61, 61, 0.08);
   color: #fff;
 }
 
 .mp-actions a:focus-visible,
 .mp-actions button:focus-visible {
-  outline: 2px solid #ff3b3b;
+  outline: 2px solid #ff4d4d;
   outline-offset: 3px;
 }
 
 .mp-actions button:disabled {
   cursor: wait;
-  opacity: 0.65;
+  opacity: 0.6;
 }
 
 .mp-actions svg {
@@ -495,8 +524,12 @@ onUnmounted(() => {
   animation: mp-spin 800ms linear infinite;
 }
 
+@keyframes mp-pulse {
+  50% { box-shadow: 0 0 0 6px rgba(30, 215, 96, 0); }
+}
+
 @keyframes mp-bar {
-  0%, 100% { transform: scaleY(0.35); }
+  0%, 100% { transform: scaleY(0.4); }
   50% { transform: scaleY(1); }
 }
 
@@ -505,12 +538,16 @@ onUnmounted(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mp-status-dot.active,
   .mp-bars span,
   .spinning {
     animation: none;
   }
 
-  .mp-progress-track div {
+  .mp-progress-track div,
+  .mp-actions a,
+  .mp-actions button,
+  .mp-panel {
     transition: none;
   }
 }
