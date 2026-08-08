@@ -244,15 +244,15 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
   width: 550px; height: 550px;
   background: radial-gradient(circle, rgba(255,35,35,0.08), transparent 70%);
   top: -160px; left: -120px;
-  animation: drift 28s var(--ease-emphasized, ease-in-out) infinite alternate;
+  animation: drift 16s ease-in-out infinite alternate;
 }
 .blob-2 {
   width: 400px; height: 400px;
   background: radial-gradient(circle, rgba(200,50,0,0.05), transparent 70%);
   bottom: -80px; right: -60px;
-  animation: drift 34s var(--ease-emphasized, ease-in-out) infinite alternate-reverse;
+  animation: drift 20s ease-in-out infinite alternate-reverse;
 }
-@keyframes drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(34px, 26px, 0); } }
+@keyframes drift { from{transform:translate(0,0)} to{transform:translate(55px,40px)} }
 
 /* ─── WRAP ───────────────────────────────────────────────── */
 .hero-wrap {
@@ -315,7 +315,7 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
   background: #ff3333;
   border-radius: 2px;
   flex-shrink: 0;
-  animation: barPulse 2.4s ease-in-out infinite;
+  animation: barPulse 1.4s ease-in-out infinite;
 }
 @keyframes barPulse { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:0.35;transform:scaleY(0.7)} }
 .tw-text {
@@ -324,7 +324,7 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
   color: #555;
   letter-spacing: 0.01em;
 }
-.blink { animation: blink 1.1s step-end infinite; color: #ff3333; }
+.blink { animation: blink 0.85s step-end infinite; color: #ff3333; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
 /* ─── LOGO ───────────────────────────────────────────────── */
@@ -341,7 +341,7 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
   inset: 30px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255,51,51,0.08), transparent 70%);
-  animation: glowPulse 5.5s ease-in-out infinite alternate;
+  animation: glowPulse 3s ease-in-out infinite alternate;
 }
 @keyframes glowPulse { from{opacity:0.5} to{opacity:1} }
 .logo-img {
@@ -361,8 +361,8 @@ onUnmounted(() => { if (lanyardInterval) clearInterval(lanyardInterval) })
   border-radius: 50%;
   border: 1px solid rgba(255,51,51,0.12);
 }
-.ring-outer { inset: 0; animation: spin 34s linear infinite; }
-.ring-inner { inset: 20px; animation: spin 24s linear infinite reverse; border-style: dashed; border-color: rgba(255,51,51,0.07); }
+.ring-outer { inset: 0; animation: spin 22s linear infinite; }
+.ring-inner { inset: 20px; animation: spin 14s linear infinite reverse; border-style: dashed; border-color: rgba(255,51,51,0.07); }
 @keyframes spin { to{transform:rotate(360deg)} }
 
 /* ─── DIVIDER ────────────────────────────────────────────── */
