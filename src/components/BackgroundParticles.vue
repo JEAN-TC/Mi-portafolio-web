@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 
@@ -12,98 +12,156 @@ interface Particle {
 }
 
 let particles: Particle[] = []
-let animationFrameId: number
+let animationFrameId: number | null = null
+let lastFrameAt = 0
+let isRunning = false
+let motionQuery: MediaQueryList | null = null
 
 const initParticles = (width: number, height: number) => {
-  particles = []
-  // Reduce particle density slightly for better mobile performance
-  const density = window.innerWidth < 768 ? 25000 : 20000 
-  const count = Math.floor((width * height) / density) 
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      size: Math.random() * 1.5 + 0.5
-    })
-  }
-}
+  const density = window.innerWidth < 768 ? 42000 : 32000
+  const count = Math.floor((width * height) / density)
 
-const draw = () => {
-  if (!canvas.value) return
-  const ctx = canvas.value.getContext('2d')
-  if (!ctx) return
-  
-  const width = window.innerWidth
-  const height = window.innerHeight
-  
-  ctx.clearRect(0, 0, width, height)
-  
-  // Update & Draw particles
-  ctx.fillStyle = 'rgba(255, 0, 0, 0.4)'
-  particles.forEach(p => {
-    p.x += p.vx
-    p.y += p.vy
-    
-    if (p.x < 0 || p.x > width) p.vx *= -1
-    if (p.y < 0 || p.y > height) p.vy *= -1
-    
-    ctx.beginPath()
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-    ctx.fill()
-  })
-  
-  // Draw connections
-  ctx.lineWidth = 0.5
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i + 1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x
-      const dy = particles[i].y - particles[j].y
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      
-      if (dist < 100) {
-        ctx.strokeStyle = `rgba(255, 0, 0, ${0.15 - dist / 100 * 0.15})`
-        ctx.beginPath()
-        ctx.moveTo(particles[i].x, particles[i].y)
-        ctx.lineTo(particles[j].x, particles[j].y)
-        ctx.stroke()
-      }
-    }
-  }
-  
-  animationFrameId = requestAnimationFrame(draw)
+  particles = Array.from({ length: count }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    vx: (Math.random() - 0.5) * 0.22,
+    vy: (Math.random() - 0.5) * 0.22,
+    size: Math.random() + 0.55
+  }))
 }
 
 const resizeCanvas = () => {
-  if (!canvas.value) return
-  const dpr = window.devicePixelRatio || 1
-  canvas.value.width = window.innerWidth * dpr
-  canvas.value.height = window.innerHeight * dpr
-  canvas.value.style.width = `${window.innerWidth}px`
-  canvas.value.style.height = `${window.innerHeight}px`
-  
-  const ctx = canvas.value.getContext('2d')
-  if (ctx) ctx.scale(dpr, dpr)
-  
-  initParticles(window.innerWidth, window.innerHeight)
+  const element = canvas.value
+  if (!element) return
+
+  const width = window.innerWidth
+  const height = window.innerHeight
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
+  const context = element.getContext('2d')
+
+  element.width = Math.floor(width * pixelRatio)
+  element.height = Math.floor(height * pixelRatio)
+  element.style.width = width + 'px'
+  element.style.height = height + 'px'
+  context?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+
+  initParticles(width, height)
+}
+
+const draw = (timestamp: number) => {
+  if (!isRunning || !canvas.value) return
+
+  if (timestamp - lastFrameAt < 34) {
+    animationFrameId = requestAnimationFrame(draw)
+    return
+  }
+
+  lastFrameAt = timestamp
+  const context = canvas.value.getContext('2d')
+  if (!context) return
+
+  const width = window.innerWidth
+  const height = window.innerHeight
+
+  context.clearRect(0, 0, width, height)
+  context.fillStyle = 'rgba(255, 48, 48, 0.28)'
+
+  particles.forEach((particle) => {
+    particle.x += particle.vx
+    particle.y += particle.vy
+
+    if (particle.x < 0 || particle.x > width) particle.vx *= -1
+    if (particle.y < 0 || particle.y > height) particle.vy *= -1
+
+    context.beginPath()
+    context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
+    context.fill()
+  })
+
+  context.lineWidth = 0.5
+  for (let index = 0; index < particles.length; index += 1) {
+    for (let nextIndex = index + 1; nextIndex < particles.length; nextIndex += 1) {
+      const dx = particles[index].x - particles[nextIndex].x
+      const dy = particles[index].y - particles[nextIndex].y
+      const distance = Math.hypot(dx, dy)
+
+      if (distance < 90) {
+        context.strokeStyle = 'rgba(255, 48, 48, ' + (0.08 - distance / 90 * 0.08) + ')'
+        context.beginPath()
+        context.moveTo(particles[index].x, particles[index].y)
+        context.lineTo(particles[nextIndex].x, particles[nextIndex].y)
+        context.stroke()
+      }
+    }
+  }
+
+  animationFrameId = requestAnimationFrame(draw)
+}
+
+const stopAnimation = () => {
+  isRunning = false
+
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = null
+  }
+}
+
+const startAnimation = () => {
+  if (
+    isRunning ||
+    document.hidden ||
+    motionQuery?.matches ||
+    !canvas.value
+  ) return
+
+  isRunning = true
+  lastFrameAt = 0
+  animationFrameId = requestAnimationFrame(draw)
+}
+
+const handleVisibilityChange = () => {
+  if (document.hidden) {
+    stopAnimation()
+    return
+  }
+
+  startAnimation()
+}
+
+const handleMotionChange = () => {
+  if (motionQuery?.matches) {
+    stopAnimation()
+    return
+  }
+
+  resizeCanvas()
+  startAnimation()
 }
 
 onMounted(() => {
+  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   resizeCanvas()
+
   window.addEventListener('resize', resizeCanvas)
-  draw()
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  motionQuery.addEventListener('change', handleMotionChange)
+
+  startAnimation()
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', resizeCanvas)
-  cancelAnimationFrame(animationFrameId)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  motionQuery?.removeEventListener('change', handleMotionChange)
+  stopAnimation()
 })
 </script>
 
 <template>
-  <canvas 
-    ref="canvas" 
-    class="fixed inset-0 w-full h-full pointer-events-none z-0"
+  <canvas
+    ref="canvas"
+    class="fixed inset-0 z-0 h-full w-full pointer-events-none"
+    aria-hidden="true"
   ></canvas>
 </template>
