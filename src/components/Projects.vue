@@ -51,16 +51,19 @@ const projects = computed(() => {
 <template>
   <section id="proyectos" class="projects-section">
     <div class="projects-shell">
-      <header class="projects-heading">
+      <header class="projects-heading" data-aos="fade-up" data-aos-duration="900">
         <h2>{{ t('projects.title1') }} <span>{{ t('projects.title2') }}</span></h2>
         <p>{{ t('projects.subtitle') }}</p>
       </header>
 
       <div class="projects-grid">
         <article
-          v-for="project in projects"
+          v-for="(project, index) in projects"
           :key="project.title"
           class="project-card"
+          data-aos="fade-up"
+          data-aos-duration="900"
+          :data-aos-delay="String(index * 120)"
         >
           <div class="project-media">
             <img
@@ -186,6 +189,24 @@ const projects = computed(() => {
   background: #101014;
 }
 
+.project-media::before {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 38%,
+    rgba(255, 45, 45, 0.08) 47%,
+    rgba(255, 74, 74, 0.72) 50%,
+    rgba(255, 45, 45, 0.08) 53%,
+    transparent 62%
+  );
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-115%);
+}
+
 .project-media::after {
   content: '';
   position: absolute;
@@ -203,9 +224,21 @@ const projects = computed(() => {
     filter 300ms ease;
 }
 
-.project-card:hover .project-media img {
+.project-card:hover .project-media img,
+.project-card:focus-within .project-media img {
   transform: scale(1.025);
   filter: brightness(1.05);
+}
+
+@media (hover: hover) {
+  .project-card:hover .project-media::before {
+    opacity: 1;
+    animation: project-scan 2.8s var(--ease-emphasized, ease-in-out) infinite;
+  }
+
+  .project-card:hover .project-focus span {
+    animation: project-pulse 2.2s ease-in-out infinite;
+  }
 }
 
 .project-focus {
@@ -361,6 +394,28 @@ const projects = computed(() => {
   border-radius: 3px;
 }
 
+@keyframes project-scan {
+  0%, 16% {
+    opacity: 0;
+    transform: translateY(-115%);
+  }
+
+  28%, 72% {
+    opacity: 1;
+  }
+
+  84%, 100% {
+    opacity: 0;
+    transform: translateY(115%);
+  }
+}
+
+@keyframes project-pulse {
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 45, 45, 0);
+  }
+}
+
 @media (max-width: 760px) {
   .projects-section {
     padding: 5.5rem 1.1rem;
@@ -382,12 +437,15 @@ const projects = computed(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .project-card,
+  .project-media::before,
   .project-media img,
+  .project-focus span,
   .project-link svg {
     transition: none;
   }
 
   .project-card:hover,
+  .project-card:hover .project-media::before,
   .project-card:hover .project-media img,
   .project-link:hover svg {
     transform: none;
