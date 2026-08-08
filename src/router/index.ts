@@ -1,4 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
+Exit code: 0
+Wall time: 2.4 seconds
+Output:
+import { createRouter, createWebHistory, START_LOCATION } from 'vue-router'
 const HomeView = () => import('../views/HomeView.vue')
 const CertificationsView = () => import('../views/CertificationsView.vue')
 const ApuntesView = () => import('../views/ApuntesView.vue')
@@ -34,11 +37,11 @@ const router = createRouter({
       component: TerminalView
     }
   ],
-  scrollBehavior(to, _from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
         el: to.hash,
-        behavior: 'smooth'
+        behavior: from === START_LOCATION ? 'auto' : 'smooth'
       }
     }
     if (savedPosition) {
@@ -50,3 +53,4 @@ const router = createRouter({
 })
 
 export default router
+
