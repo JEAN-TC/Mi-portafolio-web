@@ -26,6 +26,12 @@
 
   /* Fonts */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Motion */
+  --motion-fast: 160ms;
+  --motion-base: 240ms;
+  --motion-slow: 520ms;
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==============================
@@ -99,7 +105,11 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    background var(--motion-base) var(--ease-emphasized),
+    border-color var(--motion-base) var(--ease-emphasized),
+    box-shadow var(--motion-slow) var(--ease-emphasized),
+    transform var(--motion-base) var(--ease-emphasized);
   position: relative;
   overflow: hidden;
 }
@@ -110,12 +120,12 @@ h1, h2, h3, h4, h5, h6 {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity var(--motion-base) var(--ease-emphasized);
 }
 .card-modern:hover {
   border-color: var(--border-hover);
   background: rgba(255, 255, 255, 0.03);
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: 0 10px 40px -10px rgba(255, 0, 0, 0.05);
 }
 .card-modern:hover::before {
@@ -130,13 +140,15 @@ h1, h2, h3, h4, h5, h6 {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 0, 0, 0.12);
-  transition: border-color 0.35s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  transition:
+    border-color var(--motion-base) var(--ease-emphasized),
+    transform var(--motion-base) var(--ease-emphasized),
+    box-shadow var(--motion-slow) var(--ease-emphasized);
   overflow: hidden;
-  will-change: transform;
 }
 
 .card-glow:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   border-color: rgba(255, 0, 0, 0.30);
   box-shadow:
     0 0 0 1px rgba(255, 0, 0, 0.08),
@@ -156,7 +168,7 @@ h1, h2, h3, h4, h5, h6 {
   );
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transition: opacity var(--motion-base) var(--ease-emphasized);
   z-index: 1;
 }
 
@@ -200,7 +212,10 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition:
+    background var(--motion-fast) ease,
+    box-shadow var(--motion-base) var(--ease-emphasized),
+    transform var(--motion-fast) ease;
   box-shadow: 0 4px 20px rgba(255, 0, 0, 0.2);
 }
 .btn-primary:hover {
@@ -208,7 +223,7 @@ h1, h2, h3, h4, h5, h6 {
   transform: translateY(-2px);
 }
 .btn-primary:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-ghost {
@@ -226,7 +241,10 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 12px;
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition:
+    background var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    transform var(--motion-fast) ease;
 }
 .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.08);
@@ -259,8 +277,8 @@ h1, h2, h3, h4, h5, h6 {
   to   { opacity: 1; }
 }
 
-.animate-fade-up { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in { animation: fade-in 0.8s ease both; }
+.animate-fade-up { animation: fade-up 640ms var(--ease-emphasized) both; }
+.animate-fade-in { animation: fade-in 480ms ease both; }
 
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
@@ -289,7 +307,26 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 36s linear infinite;
+}
+
+@media (hover: hover) {
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* --- PERFORMANCE MODE --- */
