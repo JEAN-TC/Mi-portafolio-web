@@ -26,12 +26,6 @@
 
   /* Fonts */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-
-  /* Motion */
-  --motion-fast: 160ms;
-  --motion-base: 240ms;
-  --motion-slow: 520ms;
-  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==============================
@@ -112,11 +106,7 @@ body:not(.aos-ready) [data-aos] {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
-  transition:
-    background var(--motion-base) var(--ease-emphasized),
-    border-color var(--motion-base) var(--ease-emphasized),
-    box-shadow var(--motion-slow) var(--ease-emphasized),
-    transform var(--motion-base) var(--ease-emphasized);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
 }
@@ -127,12 +117,12 @@ body:not(.aos-ready) [data-aos] {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   opacity: 0;
-  transition: opacity var(--motion-base) var(--ease-emphasized);
+  transition: opacity 0.4s ease;
 }
 .card-modern:hover {
   border-color: var(--border-hover);
   background: rgba(255, 255, 255, 0.03);
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   box-shadow: 0 10px 40px -10px rgba(255, 0, 0, 0.05);
 }
 .card-modern:hover::before {
@@ -147,15 +137,13 @@ body:not(.aos-ready) [data-aos] {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 0, 0, 0.12);
-  transition:
-    border-color var(--motion-base) var(--ease-emphasized),
-    transform var(--motion-base) var(--ease-emphasized),
-    box-shadow var(--motion-slow) var(--ease-emphasized);
+  transition: border-color 0.35s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
   overflow: hidden;
+  will-change: transform;
 }
 
 .card-glow:hover {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   border-color: rgba(255, 0, 0, 0.30);
   box-shadow:
     0 0 0 1px rgba(255, 0, 0, 0.08),
@@ -175,7 +163,7 @@ body:not(.aos-ready) [data-aos] {
   );
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--motion-base) var(--ease-emphasized);
+  transition: opacity 0.35s ease;
   z-index: 1;
 }
 
@@ -219,10 +207,7 @@ body:not(.aos-ready) [data-aos] {
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  transition:
-    background var(--motion-fast) ease,
-    box-shadow var(--motion-base) var(--ease-emphasized),
-    transform var(--motion-fast) ease;
+  transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(255, 0, 0, 0.2);
 }
 .btn-primary:hover {
@@ -230,7 +215,7 @@ body:not(.aos-ready) [data-aos] {
   transform: translateY(-2px);
 }
 .btn-primary:active {
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.98);
 }
 
 .btn-ghost {
@@ -248,10 +233,7 @@ body:not(.aos-ready) [data-aos] {
   border-radius: 12px;
   border: 1px solid var(--border);
   cursor: pointer;
-  transition:
-    background var(--motion-fast) ease,
-    border-color var(--motion-fast) ease,
-    transform var(--motion-fast) ease;
+  transition: all 0.3s ease;
 }
 .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.08);
@@ -284,8 +266,8 @@ body:not(.aos-ready) [data-aos] {
   to   { opacity: 1; }
 }
 
-.animate-fade-up { animation: fade-up 640ms var(--ease-emphasized) both; }
-.animate-fade-in { animation: fade-in 480ms ease both; }
+.animate-fade-up { animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in { animation: fade-in 0.8s ease both; }
 
 .delay-100 { animation-delay: 0.1s; }
 .delay-200 { animation-delay: 0.2s; }
@@ -314,26 +296,7 @@ body:not(.aos-ready) [data-aos] {
 }
 
 .animate-marquee {
-  animation: marquee 36s linear infinite;
-}
-
-@media (hover: hover) {
-  .animate-marquee:hover {
-    animation-play-state: paused;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *, *::before, *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  animation: marquee 30s linear infinite;
 }
 
 /* --- PERFORMANCE MODE --- */
