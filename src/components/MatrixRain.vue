@@ -1,123 +1,93 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const isActive = ref(false)
 const canvasRef = ref<HTMLCanvasElement | null>(null)
-
 let animationId: number | null = null
-let resizeHandler: (() => void) | null = null
-let lastFrameAt = 0
 
-const stopMatrix = () => {
-  if (animationId !== null) {
-    cancelAnimationFrame(animationId)
-    animationId = null
-  }
-
-  if (resizeHandler) {
-    window.removeEventListener('resize', resizeHandler)
-    resizeHandler = null
+const toggleMatrix = (e: Event) => {
+  const detail = (e as CustomEvent).detail
+  if (detail === 'start') {
+    isActive.value = true
+    setTimeout(startMatrix, 50)
+  } else if (detail === 'stop') {
+    stopMatrix()
+    isActive.value = false
+  } else {
+    isActive.value = !isActive.value
+    if (isActive.value) {
+      setTimeout(startMatrix, 50)
+    } else {
+      stopMatrix()
+    }
   }
 }
 
 const startMatrix = () => {
   const canvas = canvasRef.value
-  const context = canvas?.getContext('2d')
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
 
-  if (!canvas || !context || animationId !== null || document.hidden) return
+  const resize = () => {
+    const dpr = window.devicePixelRatio || 1
+    canvas.width = window.innerWidth * dpr
+    canvas.height = window.innerHeight * dpr
+    canvas.style.width = `${window.innerWidth}px`
+    canvas.style.height = `${window.innerHeight}px`
+    ctx.scale(dpr, dpr)
+  }
+  resize()
+  window.addEventListener('resize', resize)
 
   const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789'
   const alphabet = katakana.split('')
-  let fontSize = 16
-  let rainDrops: number[] = []
 
-  const resize = () => {
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
-    const width = window.innerWidth
-    const height = window.innerHeight
+  const fontSize = window.innerWidth < 768 ? 14 : 16
+  let columns = window.innerWidth / fontSize
+  let rainDrops: number[] = Array.from({ length: columns }).map(() => 1)
 
-    canvas.width = Math.floor(width * pixelRatio)
-    canvas.height = Math.floor(height * pixelRatio)
-    canvas.style.width = width + 'px'
-    canvas.style.height = height + 'px'
-    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+  const draw = () => {
+    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#ff0000'
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
 
-    fontSize = width < 768 ? 14 : 16
-    rainDrops = Array.from({ length: Math.ceil(width / fontSize) }, () => 1)
-  }
+    ctx.fillStyle = accentColor
+    ctx.font = fontSize + 'px monospace'
 
-  const draw = (timestamp: number) => {
-    if (!isActive.value || animationId === null) return
+    for (let i = 0; i < rainDrops.length; i++) {
+      const text = alphabet[Math.floor(Math.random() * alphabet.length)]
+      ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize)
 
-    if (timestamp - lastFrameAt >= 34) {
-      lastFrameAt = timestamp
-      const accentColor = getComputedStyle(document.documentElement)
-        .getPropertyValue('--accent-color')
-        .trim() || '#ff0000'
-
-      context.fillStyle = 'rgba(0, 0, 0, 0.07)'
-      context.fillRect(0, 0, window.innerWidth, window.innerHeight)
-      context.fillStyle = accentColor
-      context.font = fontSize + 'px monospace'
-
-      rainDrops.forEach((drop, index) => {
-        const character = alphabet[Math.floor(Math.random() * alphabet.length)]
-        context.fillText(character, index * fontSize, drop * fontSize)
-
-        if (drop * fontSize > window.innerHeight && Math.random() > 0.975) {
-          rainDrops[index] = 0
-        }
-
-        rainDrops[index] += 1
-      })
+      if (rainDrops[i] * fontSize > window.innerHeight && Math.random() > 0.975) {
+        rainDrops[i] = 0
+      }
+      rainDrops[i]++
     }
-
-    animationId = requestAnimationFrame(draw)
+    setTimeout(() => {
+      if (animationId) animationId = requestAnimationFrame(draw)
+    }, 33) // ~30fps para rendimiento
   }
 
-  resizeHandler = resize
-  resize()
-  lastFrameAt = 0
   animationId = requestAnimationFrame(draw)
-  window.addEventListener('resize', resizeHandler)
+
+  draw()
 }
 
-const toggleMatrix = (event: Event) => {
-  const detail = (event as CustomEvent).detail
-
-  if (detail === 'start') {
-    isActive.value = true
-  } else if (detail === 'stop') {
-    isActive.value = false
-    stopMatrix()
-    return
-  } else {
-    isActive.value = !isActive.value
-  }
-
-  if (isActive.value) {
-    window.setTimeout(startMatrix, 50)
-  } else {
-    stopMatrix()
-  }
-}
-
-const handleVisibilityChange = () => {
-  if (document.hidden) {
-    stopMatrix()
-  } else if (isActive.value) {
-    startMatrix()
+const stopMatrix = () => {
+  if (animationId) {
+    cancelAnimationFrame(animationId)
+    animationId = null
   }
 }
 
 onMounted(() => {
   window.addEventListener('terminal-matrix', toggleMatrix)
-  document.addEventListener('visibilitychange', handleVisibilityChange)
 })
 
 onUnmounted(() => {
   window.removeEventListener('terminal-matrix', toggleMatrix)
-  document.removeEventListener('visibilitychange', handleVisibilityChange)
   stopMatrix()
 })
 </script>
@@ -127,27 +97,16 @@ onUnmounted(() => {
     <canvas
       v-if="isActive"
       ref="canvasRef"
-      class="fixed inset-0 z-40 h-full w-full bg-black/85"
-      aria-hidden="true"
+      class="fixed inset-0 w-full h-full z-40 bg-black/85"
     ></canvas>
   </transition>
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 260ms var(--ease-emphasized, ease);
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
 }
-
-.fade-enter-from,
-.fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: none;
-  }
 }
 </style>
