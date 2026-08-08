@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 2.4 seconds
+Output:
 import { createApp, nextTick } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -5,6 +8,10 @@ import './index.css'
 
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+
+if ('scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual'
+}
 
 const app = createApp(App)
 let aosReady = false
@@ -38,3 +45,4 @@ router.isReady().then(async () => {
     document.body.classList.remove('aos-ready')
   }
 })
+
