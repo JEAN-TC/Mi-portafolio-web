@@ -13,9 +13,10 @@ app.mount('#app')
 
 // Initialize AOS globally for scroll animations
 AOS.init({
-  once: false, 
-  mirror: true, 
-  duration: 800, 
+  once: true,
+  mirror: false,
+  duration: 650,
   easing: 'ease-out-cubic',
-  offset: 50,
+  offset: 40,
+  disable: () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
 })
