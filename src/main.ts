@@ -25,14 +25,12 @@ router.isReady().then(async () => {
 
   try {
     AOS.init({
-      once: true,
-      mirror: false,
-      duration: 650,
+      once: false, 
+      mirror: true, 
+      duration: 800, 
       easing: 'ease-out-cubic',
-      offset: 40,
-      disable: () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      offset: 50,
     })
-
     aosReady = true
     document.body.classList.add('aos-ready')
     refreshAos()
